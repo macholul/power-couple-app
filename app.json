@@ -9,7 +9,6 @@
     "userInterfaceStyle": "light",
     "backgroundColor": "#FFF8F1",
     "ios": {
-      "icon": "./assets/expo.icon",
       "supportsTablet": false,
       "infoPlist": {
         "NSCameraUsageDescription": "powercouple uses the camera so you can snap photo proof that you finished a goal.",
@@ -19,15 +18,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#FFF8F1",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./assets/images/android-icon-foreground.png"
       },
       "predictiveBackGestureEnabled": false,
-      "permissions": [
-        "android.permission.RECORD_AUDIO"
-      ],
       "package": "com.baris.powercouple"
     },
     "web": {
@@ -41,7 +35,7 @@
         {
           "backgroundColor": "#FFF8F1",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "imageWidth": 180
         }
       ],
       "expo-secure-store",
