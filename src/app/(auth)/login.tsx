@@ -263,6 +263,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: NEUTRAL.ink,
     backgroundColor: NEUTRAL.inputBg,
+    // Explicit, not cosmetic: iOS recycles the native UITextField between
+    // screens, and an unset letterSpacing keeps whatever the previous tenant
+    // had. Without this, arriving from /pairing (code input, letterSpacing 10)
+    // renders this placeholder as "e m a i l".
+    letterSpacing: 0,
   },
   characterRow: { flexDirection: 'row', gap: 8 },
   character: {
