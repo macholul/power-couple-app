@@ -1,58 +1,90 @@
-import { Text, View, StyleSheet } from 'react-native';
+import { useMemo } from 'react';
+import { ScrollView, Text, View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { runSelfTests } from '@/lib/self-test';
 import { FONT, NEUTRAL } from '@/constants/theme';
 
 /**
- * Boot screen. Proves the scaffold is clean, Fredoka loads, and the Supabase
- * env vars reached the bundle. Replaced by the real routing shell later.
+ * Step 3 screen: runs the ported pure logic on Hermes and reports every
+ * assertion. Replaced by the routing shell in step 4.
  */
-export default function BootScreen() {
-  const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
-  const key = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+export default function SelfTestScreen() {
+  const results = useMemo(() => runSelfTests(), []);
+  const failures = results.filter((r) => !r.pass);
+  const groups = [...new Set(results.map((r) => r.group))];
 
   return (
     <SafeAreaView style={styles.screen}>
-      <View style={styles.wordmark}>
-        <Text style={styles.power}>power</Text>
-        <Text style={styles.couple}>couple</Text>
-      </View>
-      <Text style={styles.tagline}>reach your goals, together</Text>
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.wordmark}>
+          <Text style={styles.power}>power</Text>
+          <Text style={styles.couple}>couple</Text>
+        </View>
+        <Text style={styles.tagline}>step 3 — pure logic on hermes</Text>
 
-      <View style={styles.card}>
-        <Text style={styles.label}>supabase url</Text>
-        <Text style={styles.value}>{url ?? 'MISSING'}</Text>
-        <Text style={styles.label}>anon key</Text>
-        {/* never render the key itself — just prove it arrived */}
-        <Text style={styles.value}>{key ? `loaded (${key.length} chars)` : 'MISSING'}</Text>
-      </View>
+        <View style={[styles.card, failures.length === 0 ? styles.okCard : styles.badCard]}>
+          <Text style={failures.length === 0 ? styles.bigPass : styles.bigFail}>
+            {failures.length === 0
+              ? `all ${results.length} assertions pass`
+              : `${failures.length} of ${results.length} failed`}
+          </Text>
+        </View>
+
+        {groups.map((group) => (
+          <View key={group} style={styles.card}>
+            <Text style={styles.groupLabel}>{group}</Text>
+            {results
+              .filter((r) => r.group === group)
+              .map((r) => (
+                <View key={r.name}>
+                  <View style={styles.row}>
+                    <Text style={styles.testName}>{r.name}</Text>
+                    <Text style={r.pass ? styles.pass : styles.fail}>{r.pass ? '✓' : '✕'}</Text>
+                  </View>
+                  {!r.pass && (
+                    <Text style={styles.diff}>
+                      expected {r.expected} · got {r.actual}
+                    </Text>
+                  )}
+                </View>
+              ))}
+          </View>
+        ))}
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: NEUTRAL.bg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 24,
-    gap: 4,
+  screen: { flex: 1, backgroundColor: NEUTRAL.bg },
+  content: { padding: 16, gap: 10 },
+  wordmark: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', marginTop: 4 },
+  power: { fontFamily: FONT.semibold, fontSize: 26, color: '#E5628E', letterSpacing: 0.5 },
+  couple: { fontFamily: FONT.semibold, fontSize: 26, color: '#5B8AD6' },
+  tagline: {
+    fontFamily: FONT.medium,
+    fontSize: 13,
+    color: NEUTRAL.muted,
+    textAlign: 'center',
+    marginBottom: 4,
   },
-  wordmark: { flexDirection: 'row', alignItems: 'baseline' },
-  power: { fontFamily: FONT.semibold, fontSize: 34, color: '#E5628E', letterSpacing: 0.5 },
-  couple: { fontFamily: FONT.semibold, fontSize: 34, color: '#5B8AD6' },
-  tagline: { fontFamily: FONT.medium, fontSize: 15, color: NEUTRAL.muted },
   card: {
-    marginTop: 28,
-    alignSelf: 'stretch',
     backgroundColor: '#FFFFFF',
     borderWidth: 2,
     borderColor: NEUTRAL.cardBorder,
-    borderRadius: 24,
-    padding: 18,
-    gap: 2,
+    borderRadius: 20,
+    padding: 14,
+    gap: 4,
   },
-  label: { fontFamily: FONT.semibold, fontSize: 12, color: NEUTRAL.muted, marginTop: 8 },
-  value: { fontFamily: FONT.regular, fontSize: 13, color: NEUTRAL.ink },
+  okCard: { borderColor: '#C9DFFF', backgroundColor: '#F3F8FF' },
+  badCard: { borderColor: '#FFC9DE', backgroundColor: '#FFF3F8' },
+  bigPass: { fontFamily: FONT.bold, fontSize: 16, color: '#4A79C9', textAlign: 'center' },
+  bigFail: { fontFamily: FONT.bold, fontSize: 16, color: '#C94A76', textAlign: 'center' },
+  groupLabel: { fontFamily: FONT.semibold, fontSize: 12, color: NEUTRAL.muted, marginBottom: 2 },
+  row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 },
+  testName: { fontFamily: FONT.regular, fontSize: 13, color: NEUTRAL.ink, flex: 1, lineHeight: 19 },
+  pass: { fontFamily: FONT.bold, fontSize: 14, color: '#5B8AD6' },
+  fail: { fontFamily: FONT.bold, fontSize: 14, color: '#E5628E' },
+  diff: { fontFamily: FONT.regular, fontSize: 11, color: '#C94A76', marginBottom: 4 },
 });
