@@ -105,6 +105,11 @@ export function CoupleDataProvider({ children }: { children: ReactNode }) {
   }, [paired]);
 
   useEffect(() => {
+    // Every setState inside refresh() is behind an await, so nothing here runs
+    // synchronously during the effect. The rule cannot see that, and this is
+    // the "subscribe to an external system" case its own message describes as
+    // the correct use of an effect.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void refresh();
   }, [refresh]);
 

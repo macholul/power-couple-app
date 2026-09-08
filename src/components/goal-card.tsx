@@ -259,23 +259,22 @@ function PhotoLightbox({ uri, onClose }: { uri: string; onClose: () => void }) {
 
 /** Resolves a storage path to a signed URL, or null while it is being minted. */
 function useSignedPhoto(path: string | null): string | null {
-  const [url, setUrl] = useState<string | null>(null);
+  const [signed, setSigned] = useState<{ path: string; url: string | null } | null>(null);
 
   useEffect(() => {
-    if (!path) {
-      setUrl(null);
-      return;
-    }
+    if (!path) return;
     let active = true;
-    void signedPhotoUrl(path).then((signed) => {
-      if (active) setUrl(signed);
+    void signedPhotoUrl(path).then((url) => {
+      if (active) setSigned({ path, url });
     });
     return () => {
       active = false;
     };
   }, [path]);
 
-  return url;
+  // Keyed to the path and compared during render, so a retake shows nothing
+  // rather than the previous photo while the new URL is being minted.
+  return signed?.path === path ? signed.url : null;
 }
 
 /**

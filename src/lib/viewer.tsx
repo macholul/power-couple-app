@@ -73,19 +73,23 @@ const ViewerContext = createContext<ViewerContextValue>({
   refresh: async () => {},
 });
 
+/** What the last query produced, and for which signed-in user. */
+type Fetched = {
+  userId: string;
+  result: Extract<ViewerState, { status: 'unpaired' | 'paired' }>;
+};
+
 export function ViewerProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading } = useAuth();
-  const [state, setState] = useState<ViewerState>({ status: 'loading' });
+  const [fetched, setFetched] = useState<Fetched | null>(null);
+  const userId = user?.id ?? null;
 
   const load = useCallback(async () => {
-    if (authLoading) {
-      setState({ status: 'loading' });
-      return;
-    }
-    if (!user) {
-      setState({ status: 'signedOut' });
-      return;
-    }
+    // "still restoring" and "signed out" are facts about the session, not
+    // results of this query, so they are derived below instead of written
+    // into state. Pushing them through state would render twice, and would
+    // leave the previous user's viewer on screen for a frame after a switch.
+    if (authLoading || !user) return;
 
     // profile and couple both depend only on the user id, so fetch in parallel
     const [{ data: profileRow }, { data: couple }] = await Promise.all([
@@ -115,7 +119,10 @@ export function ViewerProvider({ children }: { children: ReactNode }) {
     }
 
     if (!couple || !profile) {
-      setState({ status: 'unpaired', userId: user.id, profile });
+      setFetched({
+        userId: user.id,
+        result: { status: 'unpaired', userId: user.id, profile },
+      });
       return;
     }
 
@@ -129,19 +136,37 @@ export function ViewerProvider({ children }: { children: ReactNode }) {
     // A couple row with an unreadable partner profile is the same dead end the
     // web app treated as "not paired yet".
     if (!partner) {
-      setState({ status: 'unpaired', userId: user.id, profile });
+      setFetched({
+        userId: user.id,
+        result: { status: 'unpaired', userId: user.id, profile },
+      });
       return;
     }
 
-    setState({
-      status: 'paired',
-      viewer: { userId: user.id, profile, couple, partnerId, partner: partner as Profile },
+    setFetched({
+      userId: user.id,
+      result: {
+        status: 'paired',
+        viewer: { userId: user.id, profile, couple, partnerId, partner: partner as Profile },
+      },
     });
   }, [authLoading, user]);
 
   useEffect(() => {
+    // Every setState inside load() is behind an await, so nothing here runs
+    // synchronously during the effect. The rule cannot see that, and this is
+    // the "subscribe to an external system" case its own message describes as
+    // the correct use of an effect.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void load();
   }, [load]);
+
+  let state: ViewerState;
+  if (authLoading) state = { status: 'loading' };
+  else if (!userId) state = { status: 'signedOut' };
+  // a result belonging to a different user is not an answer about this one
+  else if (fetched?.userId === userId) state = fetched.result;
+  else state = { status: 'loading' };
 
   return (
     <ViewerContext.Provider value={{ state, refresh: load }}>{children}</ViewerContext.Provider>
