@@ -10,6 +10,7 @@ import {
   Fredoka_700Bold,
 } from '@expo-google-fonts/fredoka';
 
+import { AuthProvider } from '@/lib/auth';
 import { NEUTRAL } from '@/constants/theme';
 
 SplashScreen.preventAutoHideAsync();
@@ -33,7 +34,7 @@ export default function RootLayout() {
   if (!fontsLoaded && !fontError) return null;
 
   return (
-    <>
+    <AuthProvider>
       <StatusBar style="dark" />
       <Stack
         screenOptions={{
@@ -41,6 +42,6 @@ export default function RootLayout() {
           contentStyle: { backgroundColor: NEUTRAL.bg },
         }}
       />
-    </>
+    </AuthProvider>
   );
 }
