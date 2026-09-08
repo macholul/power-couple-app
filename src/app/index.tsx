@@ -1,98 +1,58 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { FONT, NEUTRAL } from '@/constants/theme';
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+/**
+ * Boot screen. Proves the scaffold is clean, Fredoka loads, and the Supabase
+ * env vars reached the bundle. Replaced by the real routing shell later.
+ */
+export default function BootScreen() {
+  const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
+  const key = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+    <SafeAreaView style={styles.screen}>
+      <View style={styles.wordmark}>
+        <Text style={styles.power}>power</Text>
+        <Text style={styles.couple}>couple</Text>
+      </View>
+      <Text style={styles.tagline}>reach your goals, together</Text>
 
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+      <View style={styles.card}>
+        <Text style={styles.label}>supabase url</Text>
+        <Text style={styles.value}>{url ?? 'MISSING'}</Text>
+        <Text style={styles.label}>anon key</Text>
+        {/* never render the key itself — just prove it arrived */}
+        <Text style={styles.value}>{key ? `loaded (${key.length} chars)` : 'MISSING'}</Text>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
+    backgroundColor: NEUTRAL.bg,
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+    padding: 24,
+    gap: 4,
   },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
+  wordmark: { flexDirection: 'row', alignItems: 'baseline' },
+  power: { fontFamily: FONT.semibold, fontSize: 34, color: '#E5628E', letterSpacing: 0.5 },
+  couple: { fontFamily: FONT.semibold, fontSize: 34, color: '#5B8AD6' },
+  tagline: { fontFamily: FONT.medium, fontSize: 15, color: NEUTRAL.muted },
+  card: {
+    marginTop: 28,
     alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 2,
+    borderColor: NEUTRAL.cardBorder,
+    borderRadius: 24,
+    padding: 18,
+    gap: 2,
   },
+  label: { fontFamily: FONT.semibold, fontSize: 12, color: NEUTRAL.muted, marginTop: 8 },
+  value: { fontFamily: FONT.regular, fontSize: 13, color: NEUTRAL.ink },
 });
