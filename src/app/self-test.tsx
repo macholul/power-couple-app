@@ -6,8 +6,11 @@ import { runSelfTests } from '@/lib/self-test';
 import { FONT, NEUTRAL } from '@/constants/theme';
 
 /**
- * Step 3 screen: runs the ported pure logic on Hermes and reports every
- * assertion. Replaced by the routing shell in step 4.
+ * Runs the ported pure logic on Hermes and reports every assertion.
+ *
+ * Kept as a real route (/self-test) rather than deleted: it costs nothing at
+ * runtime and is the fastest way to find out whether an Expo SDK upgrade has
+ * changed Hermes' Intl behaviour under the streak math.
  */
 export default function SelfTestScreen() {
   const results = useMemo(() => runSelfTests(), []);
@@ -21,7 +24,7 @@ export default function SelfTestScreen() {
           <Text style={styles.power}>power</Text>
           <Text style={styles.couple}>couple</Text>
         </View>
-        <Text style={styles.tagline}>step 3 — pure logic on hermes</Text>
+        <Text style={styles.tagline}>pure logic on hermes</Text>
 
         <View style={[styles.card, failures.length === 0 ? styles.okCard : styles.badCard]}>
           <Text style={failures.length === 0 ? styles.bigPass : styles.bigFail}>

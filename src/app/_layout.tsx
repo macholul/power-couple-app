@@ -11,6 +11,7 @@ import {
 } from '@expo-google-fonts/fredoka';
 
 import { AuthProvider } from '@/lib/auth';
+import { ViewerProvider } from '@/lib/viewer';
 import { NEUTRAL } from '@/constants/theme';
 
 SplashScreen.preventAutoHideAsync();
@@ -35,13 +36,15 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <StatusBar style="dark" />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: NEUTRAL.bg },
-        }}
-      />
+      <ViewerProvider>
+        <StatusBar style="dark" />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: NEUTRAL.bg },
+          }}
+        />
+      </ViewerProvider>
     </AuthProvider>
   );
 }

@@ -12,6 +12,7 @@
 import { addDaysToKey, dateKeyIn, monthStartOfKey, weekdayOfKey } from '@/lib/dates';
 import { computeStreaks, type StreakSide } from '@/lib/streaks';
 import { THEMES, themeFor, otherCharacter } from '@/lib/theme';
+import { gateTarget, type ViewerState } from '@/lib/viewer';
 import type { DaySchedule, Task, TaskCompletion } from '@/lib/types/database';
 
 export interface TestResult {
@@ -212,6 +213,44 @@ export function runSelfTests(): TestResult[] {
     outer: '#FFE3EE',
     centerY: 0.8,
   });
+
+  // ------------------------------------------------------------------- gate
+
+  // The three redirect decisions the web app made server-side, as data.
+  const profile = { id: U1, display_name: 'me', avatar_character: 'mae' } as never;
+  const states: Record<string, ViewerState> = {
+    loading: { status: 'loading' },
+    signedOut: { status: 'signedOut' },
+    unpaired: { status: 'unpaired', userId: U1, profile },
+    paired: {
+      status: 'paired',
+      viewer: {
+        userId: U1,
+        profile,
+        couple: { id: 'c1', user1_id: U1, user2_id: U2, created_at: '2026-01-01T00:00:00Z' },
+        partnerId: U2,
+        partner: profile,
+      },
+    },
+  };
+
+  // A half-known state must never route: acting before the session is
+  // restored is what bounces users between screens on cold start.
+  for (const area of ['app', 'auth', 'pairing'] as const) {
+    check('gate', `loading stays put (${area})`, gateTarget(states.loading, area), null);
+  }
+
+  check('gate', 'app + signed out -> login', gateTarget(states.signedOut, 'app'), '/login');
+  check('gate', 'app + unpaired -> pairing', gateTarget(states.unpaired, 'app'), '/pairing');
+  check('gate', 'app + paired stays', gateTarget(states.paired, 'app'), null);
+
+  check('gate', 'auth + signed out stays', gateTarget(states.signedOut, 'auth'), null);
+  check('gate', 'auth + unpaired -> pairing', gateTarget(states.unpaired, 'auth'), '/pairing');
+  check('gate', 'auth + paired -> home', gateTarget(states.paired, 'auth'), '/');
+
+  check('gate', 'pairing + signed out -> login', gateTarget(states.signedOut, 'pairing'), '/login');
+  check('gate', 'pairing + unpaired stays', gateTarget(states.unpaired, 'pairing'), null);
+  check('gate', 'pairing + paired -> home', gateTarget(states.paired, 'pairing'), '/');
 
   return [...results];
 }
