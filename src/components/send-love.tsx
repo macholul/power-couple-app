@@ -19,7 +19,7 @@ export function SendLove({
   partnerName: string;
   partnerPronoun: 'his' | 'her';
   theme: SideTheme;
-  onSent: () => void;
+  onSent: () => Promise<void>;
 }) {
   const [sentMsg, setSentMsg] = useState<string | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -40,7 +40,7 @@ export function SendLove({
         setSentMsg(null);
         if (timerRef.current) clearTimeout(timerRef.current);
       }
-      onSent();
+      void onSent();
     });
   };
 

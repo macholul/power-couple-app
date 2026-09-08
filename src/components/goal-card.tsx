@@ -58,7 +58,8 @@ export function GoalCard({
   isMine: boolean;
   reviewerName: string;
   theme: SideTheme;
-  onChanged: () => void;
+  /** resolves once the refreshed rows have landed */
+  onChanged: () => Promise<void>;
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -73,12 +74,10 @@ export function GoalCard({
   const remoteUrl = useSignedPhoto(view.localUri ? null : photoPath);
   const photo = view.localUri ?? remoteUrl;
 
-  // once the server row agrees with what was shown optimistically, drop the
-  // overlay so later prop changes (a retake, a partner's confirm) show through
-  useEffect(() => {
-    if (optimistic && optimistic.state === state) setOptimistic(null);
-  }, [optimistic, state]);
-
+  // The overlay is held until the refreshed rows have actually landed, not
+  // until the card's state happens to match. A retake never changes `state`
+  // (proof -> proof), so comparing state would drop the new photo on the very
+  // next render and snap the card back to the old one.
   const onPickPhoto = async () => {
     const asset = await pickPhoto();
     if (!asset) return;
@@ -95,8 +94,10 @@ export function GoalCard({
     if (result.error) {
       setError(result.error);
       setOptimistic(null);
+      return;
     }
-    onChanged();
+    await onChanged();
+    setOptimistic(null);
   };
 
   const onConfirm = async () => {
@@ -108,8 +109,10 @@ export function GoalCard({
     if (result.error) {
       setError(result.error);
       setOptimistic(null);
+      return;
     }
-    onChanged();
+    await onChanged();
+    setOptimistic(null);
   };
 
   return (

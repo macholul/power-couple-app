@@ -57,7 +57,7 @@ function GoalRow({
   goal: Task;
   theme: SideTheme;
   onDelete: () => void;
-  onChanged: () => void;
+  onChanged: () => Promise<void>;
 }) {
   const [days, setDays] = useState(goal.scheduled_weekdays);
   const [title, setTitle] = useState(goal.title);
@@ -123,7 +123,8 @@ export function GoalsEditor({
 }: {
   goals: Task[];
   theme: SideTheme;
-  onChanged: () => void;
+  /** resolves once the refreshed rows have landed */
+  onChanged: () => Promise<void>;
 }) {
   const [draft, setDraft] = useState('');
   const [newDays, setNewDays] = useState<number[]>(ALL_DAYS);
@@ -169,19 +170,31 @@ export function GoalsEditor({
 
     const result = await addGoal(title, days);
     setAdding(false);
-    if (result.error) setError(result.error);
-    setPendingAdds((current) => current.filter((goal) => goal.id !== temp.id));
-    onChanged();
+    const drop = () =>
+      setPendingAdds((current) => current.filter((goal) => goal.id !== temp.id));
+    if (result.error) {
+      setError(result.error);
+      drop();
+      return;
+    }
+    // hold the stand-in until the real row is in hand, or the goal blinks out
+    // of the list and back in
+    await onChanged();
+    drop();
   };
 
   const onDelete = async (id: string) => {
     setDeletedIds((current) => [...current, id]);
     const result = await archiveGoal(id);
+    const forget = () =>
+      setDeletedIds((current) => current.filter((existing) => existing !== id));
     if (result.error) {
       setError(result.error);
-      setDeletedIds((current) => current.filter((existing) => existing !== id));
+      forget(); // put it back: the archive did not happen
+      return;
     }
-    onChanged();
+    await onChanged();
+    forget(); // the refreshed list already excludes it
   };
 
   return (

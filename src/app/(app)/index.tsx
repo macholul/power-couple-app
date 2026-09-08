@@ -259,7 +259,7 @@ function SidePanel({
   viewerId: string;
   reviewerName: string;
   delay: number;
-  onChanged: () => void;
+  onChanged: () => Promise<void>;
 }) {
   return (
     <PopIn
@@ -284,7 +284,7 @@ function SidePanel({
             border={theme.panelBorder}
             color={theme.deep}
             shadow={theme.shadowBadge}
-            onDismissed={onChanged}
+            onDismissed={() => void onChanged()}
           />
         )}
       </CharacterStage>
