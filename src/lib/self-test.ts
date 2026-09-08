@@ -13,6 +13,8 @@ import { addDaysToKey, dateKeyIn, monthStartOfKey, weekdayOfKey } from '@/lib/da
 import { computeStreaks, type StreakSide } from '@/lib/streaks';
 import { THEMES, themeFor, otherCharacter } from '@/lib/theme';
 import { gateTarget, type ViewerState } from '@/lib/viewer';
+import { decodeBase64 } from '@/lib/photos';
+import { stageGeometry } from '@/components/character-stage';
 import type { DaySchedule, Task, TaskCompletion } from '@/lib/types/database';
 
 export interface TestResult {
@@ -251,6 +253,50 @@ export function runSelfTests(): TestResult[] {
   check('gate', 'pairing + signed out -> login', gateTarget(states.signedOut, 'pairing'), '/login');
   check('gate', 'pairing + unpaired stays', gateTarget(states.unpaired, 'pairing'), null);
   check('gate', 'pairing + paired -> home', gateTarget(states.paired, 'pairing'), '/');
+
+  // -------------------------------------------------------------- photos
+  //
+  // decodeBase64 is the only hand-written arithmetic in the port: React
+  // Native has no Blob the storage client can serialise, so the JPEG has to
+  // reach supabase-js as bytes. Vectors are RFC 4648's, plus a real JPEG
+  // header, checked against Python's base64 beforehand.
+  const b64 = (input: string) => Array.from(decodeBase64(input));
+
+  check('photos', 'empty string', b64(''), []);
+  check('photos', 'no padding', b64('TWFu'), [77, 97, 110]);
+  check('photos', 'two pad chars', b64('TQ=='), [77]);
+  check('photos', 'one pad char', b64('TWE='), [77, 97]);
+  check('photos', 'high bit survives', b64('/w=='), [255]);
+  check('photos', 'leading zero bytes', b64('AAECAwQ='), [0, 1, 2, 3, 4]);
+  // if this one is wrong the upload succeeds and the photo is corrupt
+  check('photos', 'jpeg magic bytes', b64('/9j/4AAQ'), [255, 216, 255, 224, 0, 16]);
+  check(
+    'photos',
+    'longer payload',
+    b64('aGVsbG8gd29ybGQ='),
+    [104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100],
+  );
+  // whitespace is what a wrapped base64 stream would carry
+  check('photos', 'ignores whitespace', b64('TWFu\nTWFu'), [77, 97, 110, 77, 97, 110]);
+
+  // --------------------------------------------------------------- stage
+  //
+  // The CSS was `radial-gradient(circle at 50% Y%, inner 0%, outer 70%)`.
+  // `circle` with no size means farthest-corner, so on a 100x100 stage with
+  // the centre at 50%,50% the radius is the half-diagonal.
+  const square = stageGeometry(100, 100, 0.5);
+  check('stage', 'centred cx', square.cx, 50);
+  check('stage', 'centred cy', square.cy, 50);
+  check('stage', 'half diagonal radius', Math.round(square.r * 1000) / 1000, 70.711);
+
+  // the real panels put the circle low, so the far corner is the top one
+  const panel = stageGeometry(160, 180, 0.8);
+  check('stage', 'low centre cy', panel.cy, 144);
+  check('stage', 'reaches the far (top) corner', Math.round(panel.r * 1000) / 1000, 164.73);
+
+  // a zero-width stage is what the first render sees, before onLayout
+  const unmeasured = stageGeometry(0, 180, 0.8);
+  check('stage', 'unmeasured is finite', Number.isFinite(unmeasured.r), true);
 
   return [...results];
 }

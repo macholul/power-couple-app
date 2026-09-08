@@ -22,6 +22,23 @@ import type { StageGradient } from '@/lib/theme';
  *  - `0%` and `70%` are colour-stop positions, not the radius. Past 70% the
  *    colour holds, which is SVG's default `pad` spread.
  */
+/**
+ * Where the SVG gradient's circle sits, in the stage's own pixels. Pulled out
+ * of the component so the CSS-to-SVG translation can be asserted rather than
+ * eyeballed — see lib/self-test.
+ */
+export function stageGeometry(width: number, height: number, centerY: number) {
+  const cx = width / 2;
+  const cy = height * centerY;
+  return {
+    cx,
+    cy,
+    // CSS `circle` with no size means farthest-corner; cx is always the
+    // midpoint, so the furthest corner is whichever of top/bottom is further
+    r: Math.sqrt(cx ** 2 + Math.max(cy, height - cy) ** 2),
+  };
+}
+
 export function CharacterStage({
   src,
   height,
@@ -34,13 +51,7 @@ export function CharacterStage({
   children?: ReactNode;
 }) {
   const [width, setWidth] = useState(0);
-
-  const centreX = width / 2;
-  const centreY = height * gradient.centerY;
-  // farthest corner from the centre
-  const radius = Math.sqrt(
-    centreX ** 2 + Math.max(centreY, height - centreY) ** 2,
-  );
+  const { cx, cy, r } = stageGeometry(width, height, gradient.centerY);
 
   return (
     <View
@@ -53,9 +64,9 @@ export function CharacterStage({
             <RadialGradient
               id="stage"
               gradientUnits="userSpaceOnUse"
-              cx={centreX}
-              cy={centreY}
-              r={radius}
+              cx={cx}
+              cy={cy}
+              r={r}
             >
               <Stop offset="0" stopColor={gradient.inner} />
               <Stop offset="0.7" stopColor={gradient.outer} />
