@@ -1,0 +1,898 @@
+{
+  "columns": [
+    {
+      "column_default": "'{}'::smallint[]",
+      "column_name": "scheduled_weekdays",
+      "data_type": "ARRAY",
+      "is_nullable": "NO",
+      "table_name": "tasks",
+      "udt_name": "_int2"
+    },
+    {
+      "column_default": "'{}'::uuid[]",
+      "column_name": "task_ids",
+      "data_type": "ARRAY",
+      "is_nullable": "NO",
+      "table_name": "day_schedules",
+      "udt_name": "_uuid"
+    },
+    {
+      "column_default": "'mae'::text",
+      "column_name": "avatar_character",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "table_name": "profiles",
+      "udt_name": "text"
+    },
+    {
+      "column_default": "'submitted'::text",
+      "column_name": "status",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "table_name": "task_completions",
+      "udt_name": "text"
+    },
+    {
+      "column_default": "'UTC'::text",
+      "column_name": "timezone",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "table_name": "profiles",
+      "udt_name": "text"
+    },
+    {
+      "column_default": "(now() + '1 day'::interval)",
+      "column_name": "expires_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "table_name": "couple_invites",
+      "udt_name": "timestamptz"
+    },
+    {
+      "column_default": "CURRENT_DATE",
+      "column_name": "scheduled_date",
+      "data_type": "date",
+      "is_nullable": "NO",
+      "table_name": "task_completions",
+      "udt_name": "date"
+    },
+    {
+      "column_default": "false",
+      "column_name": "used",
+      "data_type": "boolean",
+      "is_nullable": "YES",
+      "table_name": "couple_invites",
+      "udt_name": "bool"
+    },
+    {
+      "column_default": "gen_random_uuid()",
+      "column_name": "id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "table_name": "couples",
+      "udt_name": "uuid"
+    },
+    {
+      "column_default": "gen_random_uuid()",
+      "column_name": "id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "table_name": "love_notes",
+      "udt_name": "uuid"
+    },
+    {
+      "column_default": "gen_random_uuid()",
+      "column_name": "id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "table_name": "task_completions",
+      "udt_name": "uuid"
+    },
+    {
+      "column_default": "gen_random_uuid()",
+      "column_name": "id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "table_name": "tasks",
+      "udt_name": "uuid"
+    },
+    {
+      "column_default": "now()",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "table_name": "love_notes",
+      "udt_name": "timestamptz"
+    },
+    {
+      "column_default": "now()",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "table_name": "couples",
+      "udt_name": "timestamptz"
+    },
+    {
+      "column_default": "now()",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "table_name": "profiles",
+      "udt_name": "timestamptz"
+    },
+    {
+      "column_default": "now()",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "table_name": "tasks",
+      "udt_name": "timestamptz"
+    },
+    {
+      "column_default": "now()",
+      "column_name": "submitted_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "table_name": "task_completions",
+      "udt_name": "timestamptz"
+    },
+    {
+      "column_default": "now()",
+      "column_name": "updated_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "table_name": "day_schedules",
+      "udt_name": "timestamptz"
+    },
+    {
+      "column_default": "now()",
+      "column_name": "updated_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "table_name": "tasks",
+      "udt_name": "timestamptz"
+    },
+    {
+      "column_default": null,
+      "column_name": "archived_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "table_name": "tasks",
+      "udt_name": "timestamptz"
+    },
+    {
+      "column_default": null,
+      "column_name": "assigned_to",
+      "data_type": "uuid",
+      "is_nullable": "YES",
+      "table_name": "tasks",
+      "udt_name": "uuid"
+    },
+    {
+      "column_default": null,
+      "column_name": "avatar_url",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "table_name": "profiles",
+      "udt_name": "text"
+    },
+    {
+      "column_default": null,
+      "column_name": "code",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "table_name": "couple_invites",
+      "udt_name": "text"
+    },
+    {
+      "column_default": null,
+      "column_name": "couple_id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "table_name": "love_notes",
+      "udt_name": "uuid"
+    },
+    {
+      "column_default": null,
+      "column_name": "couple_id",
+      "data_type": "uuid",
+      "is_nullable": "YES",
+      "table_name": "tasks",
+      "udt_name": "uuid"
+    },
+    {
+      "column_default": null,
+      "column_name": "created_by",
+      "data_type": "uuid",
+      "is_nullable": "YES",
+      "table_name": "couple_invites",
+      "udt_name": "uuid"
+    },
+    {
+      "column_default": null,
+      "column_name": "date_key",
+      "data_type": "date",
+      "is_nullable": "NO",
+      "table_name": "day_schedules",
+      "udt_name": "date"
+    },
+    {
+      "column_default": null,
+      "column_name": "dismissed_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "table_name": "love_notes",
+      "udt_name": "timestamptz"
+    },
+    {
+      "column_default": null,
+      "column_name": "display_name",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "table_name": "profiles",
+      "udt_name": "text"
+    },
+    {
+      "column_default": null,
+      "column_name": "id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "table_name": "profiles",
+      "udt_name": "uuid"
+    },
+    {
+      "column_default": null,
+      "column_name": "photo_url",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "table_name": "task_completions",
+      "udt_name": "text"
+    },
+    {
+      "column_default": null,
+      "column_name": "reviewed_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "table_name": "task_completions",
+      "udt_name": "timestamptz"
+    },
+    {
+      "column_default": null,
+      "column_name": "reviewed_by",
+      "data_type": "uuid",
+      "is_nullable": "YES",
+      "table_name": "task_completions",
+      "udt_name": "uuid"
+    },
+    {
+      "column_default": null,
+      "column_name": "sender_id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "table_name": "love_notes",
+      "udt_name": "uuid"
+    },
+    {
+      "column_default": null,
+      "column_name": "submitted_by",
+      "data_type": "uuid",
+      "is_nullable": "YES",
+      "table_name": "task_completions",
+      "udt_name": "uuid"
+    },
+    {
+      "column_default": null,
+      "column_name": "task_id",
+      "data_type": "uuid",
+      "is_nullable": "YES",
+      "table_name": "task_completions",
+      "udt_name": "uuid"
+    },
+    {
+      "column_default": null,
+      "column_name": "text",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "table_name": "love_notes",
+      "udt_name": "text"
+    },
+    {
+      "column_default": null,
+      "column_name": "title",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "table_name": "tasks",
+      "udt_name": "text"
+    },
+    {
+      "column_default": null,
+      "column_name": "user_id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "table_name": "day_schedules",
+      "udt_name": "uuid"
+    },
+    {
+      "column_default": null,
+      "column_name": "user1_id",
+      "data_type": "uuid",
+      "is_nullable": "YES",
+      "table_name": "couples",
+      "udt_name": "uuid"
+    },
+    {
+      "column_default": null,
+      "column_name": "user2_id",
+      "data_type": "uuid",
+      "is_nullable": "YES",
+      "table_name": "couples",
+      "udt_name": "uuid"
+    }
+  ],
+  "constraints": [
+    {
+      "conname": "couple_invites_created_by_fkey",
+      "def": "FOREIGN KEY (created_by) REFERENCES profiles(id) ON DELETE CASCADE",
+      "tbl": "couple_invites"
+    },
+    {
+      "conname": "couple_invites_pkey",
+      "def": "PRIMARY KEY (code)",
+      "tbl": "couple_invites"
+    },
+    {
+      "conname": "couples_pkey",
+      "def": "PRIMARY KEY (id)",
+      "tbl": "couples"
+    },
+    {
+      "conname": "couples_user1_id_fkey",
+      "def": "FOREIGN KEY (user1_id) REFERENCES profiles(id) ON DELETE CASCADE",
+      "tbl": "couples"
+    },
+    {
+      "conname": "couples_user1_id_user2_id_key",
+      "def": "UNIQUE (user1_id, user2_id)",
+      "tbl": "couples"
+    },
+    {
+      "conname": "couples_user2_id_fkey",
+      "def": "FOREIGN KEY (user2_id) REFERENCES profiles(id) ON DELETE CASCADE",
+      "tbl": "couples"
+    },
+    {
+      "conname": "day_schedules_pkey",
+      "def": "PRIMARY KEY (user_id, date_key)",
+      "tbl": "day_schedules"
+    },
+    {
+      "conname": "day_schedules_user_id_fkey",
+      "def": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+      "tbl": "day_schedules"
+    },
+    {
+      "conname": "love_notes_couple_id_fkey",
+      "def": "FOREIGN KEY (couple_id) REFERENCES couples(id) ON DELETE CASCADE",
+      "tbl": "love_notes"
+    },
+    {
+      "conname": "love_notes_pkey",
+      "def": "PRIMARY KEY (id)",
+      "tbl": "love_notes"
+    },
+    {
+      "conname": "love_notes_sender_id_fkey",
+      "def": "FOREIGN KEY (sender_id) REFERENCES profiles(id) ON DELETE CASCADE",
+      "tbl": "love_notes"
+    },
+    {
+      "conname": "profiles_avatar_character_check",
+      "def": "CHECK ((avatar_character = ANY (ARRAY['mae'::text, 'baris'::text])))",
+      "tbl": "profiles"
+    },
+    {
+      "conname": "profiles_id_fkey",
+      "def": "FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE",
+      "tbl": "profiles"
+    },
+    {
+      "conname": "profiles_pkey",
+      "def": "PRIMARY KEY (id)",
+      "tbl": "profiles"
+    },
+    {
+      "conname": "task_completions_pkey",
+      "def": "PRIMARY KEY (id)",
+      "tbl": "task_completions"
+    },
+    {
+      "conname": "task_completions_reviewed_by_fkey",
+      "def": "FOREIGN KEY (reviewed_by) REFERENCES profiles(id) ON DELETE SET NULL",
+      "tbl": "task_completions"
+    },
+    {
+      "conname": "task_completions_status_check",
+      "def": "CHECK ((status = ANY (ARRAY['submitted'::text, 'approved'::text])))",
+      "tbl": "task_completions"
+    },
+    {
+      "conname": "task_completions_submitted_by_fkey",
+      "def": "FOREIGN KEY (submitted_by) REFERENCES profiles(id) ON DELETE CASCADE",
+      "tbl": "task_completions"
+    },
+    {
+      "conname": "task_completions_task_id_fkey",
+      "def": "FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE",
+      "tbl": "task_completions"
+    },
+    {
+      "conname": "tasks_assigned_to_fkey",
+      "def": "FOREIGN KEY (assigned_to) REFERENCES profiles(id) ON DELETE CASCADE",
+      "tbl": "tasks"
+    },
+    {
+      "conname": "tasks_couple_id_fkey",
+      "def": "FOREIGN KEY (couple_id) REFERENCES couples(id) ON DELETE CASCADE",
+      "tbl": "tasks"
+    },
+    {
+      "conname": "tasks_pkey",
+      "def": "PRIMARY KEY (id)",
+      "tbl": "tasks"
+    }
+  ],
+  "indexes": [
+    {
+      "indexdef": "CREATE UNIQUE INDEX couple_invites_pkey ON public.couple_invites USING btree (code)",
+      "indexname": "couple_invites_pkey",
+      "tablename": "couple_invites"
+    },
+    {
+      "indexdef": "CREATE UNIQUE INDEX couples_pkey ON public.couples USING btree (id)",
+      "indexname": "couples_pkey",
+      "tablename": "couples"
+    },
+    {
+      "indexdef": "CREATE UNIQUE INDEX couples_user1_id_user2_id_key ON public.couples USING btree (user1_id, user2_id)",
+      "indexname": "couples_user1_id_user2_id_key",
+      "tablename": "couples"
+    },
+    {
+      "indexdef": "CREATE UNIQUE INDEX day_schedules_pkey ON public.day_schedules USING btree (user_id, date_key)",
+      "indexname": "day_schedules_pkey",
+      "tablename": "day_schedules"
+    },
+    {
+      "indexdef": "CREATE UNIQUE INDEX love_notes_pkey ON public.love_notes USING btree (id)",
+      "indexname": "love_notes_pkey",
+      "tablename": "love_notes"
+    },
+    {
+      "indexdef": "CREATE UNIQUE INDEX profiles_pkey ON public.profiles USING btree (id)",
+      "indexname": "profiles_pkey",
+      "tablename": "profiles"
+    },
+    {
+      "indexdef": "CREATE UNIQUE INDEX task_completions_pkey ON public.task_completions USING btree (id)",
+      "indexname": "task_completions_pkey",
+      "tablename": "task_completions"
+    },
+    {
+      "indexdef": "CREATE UNIQUE INDEX tasks_pkey ON public.tasks USING btree (id)",
+      "indexname": "tasks_pkey",
+      "tablename": "tasks"
+    }
+  ],
+  "rls": [
+    {
+      "relname": "couple_invites",
+      "relrowsecurity": true
+    },
+    {
+      "relname": "couples",
+      "relrowsecurity": true
+    },
+    {
+      "relname": "day_schedules",
+      "relrowsecurity": true
+    },
+    {
+      "relname": "love_notes",
+      "relrowsecurity": true
+    },
+    {
+      "relname": "profiles",
+      "relrowsecurity": true
+    },
+    {
+      "relname": "task_completions",
+      "relrowsecurity": true
+    },
+    {
+      "relname": "tasks",
+      "relrowsecurity": true
+    }
+  ],
+  "functions": [
+    {
+      "args": "",
+      "config": "",
+      "def": "CREATE OR REPLACE FUNCTION public.handle_new_user() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER AS $function$ begin insert into public.profiles (id, display_name) values (new.id, coalesce(new.raw_user_meta_data->>'display_name', 'New User')); return new; end; $function$",
+      "name": "handle_new_user",
+      "security_definer": true
+    },
+    {
+      "args": "",
+      "config": "search_path=public",
+      "def": "CREATE OR REPLACE FUNCTION public.generate_invite() RETURNS text LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public' AS $function$ declare v_chars constant text := 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; v_code text := ''; i int; begin if my_couple_id() is not null then raise exception 'already paired'; end if; for i in 1..6 loop v_code := v_code || substr(v_chars, 1 + floor(random() * length(v_chars))::int, 1); end loop; -- \"new code\" invalidates any previous codes from this user update couple_invites set used = true where created_by = auth.uid() and not used; insert into couple_invites (code, created_by, expires_at, used) values (v_code, auth.uid(), now() + interval '1 year', false); return v_code; end; $function$",
+      "name": "generate_invite",
+      "security_definer": true
+    },
+    {
+      "args": "",
+      "config": "search_path=public",
+      "def": "CREATE OR REPLACE FUNCTION public.my_couple_id() RETURNS uuid LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO 'public' AS $function$ select id from couples where user1_id = auth.uid() or user2_id = auth.uid() limit 1; $function$",
+      "name": "my_couple_id",
+      "security_definer": true
+    },
+    {
+      "args": "",
+      "config": "search_path=public",
+      "def": "CREATE OR REPLACE FUNCTION public.record_today_schedule() RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public' AS $function$ declare v_tz text; v_today date; v_dow int; v_ids uuid[]; begin if auth.uid() is null then raise exception 'not signed in'; end if; select coalesce(timezone, 'UTC') into v_tz from profiles where id = auth.uid(); begin v_today := (now() at time zone v_tz)::date; exception when others then v_tz := 'UTC'; v_today := (now() at time zone 'UTC')::date; end; -- freeze any unrecorded past days (up to 60 back) from the current -- schedule — the best guess available at first opportunity. Existing -- records are never touched, so frozen days stay frozen. insert into day_schedules (user_id, date_key, task_ids) select auth.uid(), d.day::date, coalesce(( select array_agg(t.id) from tasks t where t.assigned_to = auth.uid() and (t.created_at at time zone v_tz)::date <= d.day::date and (t.archived_at is null or (t.archived_at at time zone v_tz)::date > d.day::date) and extract(dow from d.day::date) = any (t.scheduled_weekdays) ), '{}') from generate_series( (v_today - 60)::timestamp, (v_today - 1)::timestamp, interval '1 day' ) as d(day) where not exists ( select 1 from day_schedules ds where ds.user_id = auth.uid() and ds.date_key = d.day::date ) on conflict (user_id, date_key) do nothing; -- today is still live, so it IS refreshed on every call v_dow := extract(dow from v_today); -- 0 = Sunday .. 6 = Saturday select coalesce(array_agg(id), '{}') into v_ids from tasks where assigned_to = auth.uid() and archived_at is null and v_dow = any (scheduled_weekdays); insert into day_schedules (user_id, date_key, task_ids, updated_at) values (auth.uid(), v_today, v_ids, now()) on conflict (user_id, date_key) do update set task_ids = excluded.task_ids, updated_at = now(); end; $function$",
+      "name": "record_today_schedule",
+      "security_definer": true
+    },
+    {
+      "args": "p_code text",
+      "config": "search_path=public",
+      "def": "CREATE OR REPLACE FUNCTION public.redeem_invite(p_code text) RETURNS uuid LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public' AS $function$ declare v_invite couple_invites%rowtype; v_couple_id uuid; begin if my_couple_id() is not null then raise exception 'already paired'; end if; select * into v_invite from couple_invites where upper(code) = upper(trim(p_code)) and not used order by expires_at desc limit 1 for update; if not found then raise exception 'invite not found'; end if; if v_invite.expires_at < now() then raise exception 'invite expired'; end if; if v_invite.created_by = auth.uid() then raise exception 'cannot redeem your own invite'; end if; if exists ( select 1 from couples where user1_id = v_invite.created_by or user2_id = v_invite.created_by ) then raise exception 'inviter is already paired'; end if; insert into couples (user1_id, user2_id) values (v_invite.created_by, auth.uid()) returning id into v_couple_id; update couple_invites set used = true where code = v_invite.code; return v_couple_id; end; $function$",
+      "name": "redeem_invite",
+      "security_definer": true
+    },
+    {
+      "args": "p_completion_id uuid",
+      "config": "search_path=public",
+      "def": "CREATE OR REPLACE FUNCTION public.approve_completion(p_completion_id uuid) RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public' AS $function$ declare v_completion task_completions%rowtype; v_task tasks%rowtype; begin select * into v_completion from task_completions where id = p_completion_id for update; if not found then raise exception 'completion not found'; end if; if v_completion.status <> 'submitted' then raise exception 'completion is not pending'; end if; if v_completion.submitted_by = auth.uid() then raise exception 'cannot confirm your own submission'; end if; select * into v_task from tasks where id = v_completion.task_id; if not exists ( select 1 from couples where id = v_task.couple_id and (user1_id = auth.uid() or user2_id = auth.uid()) ) then raise exception 'not authorized'; end if; update task_completions set status = 'approved', reviewed_by = auth.uid(), reviewed_at = now() where id = p_completion_id; end; $function$",
+      "name": "approve_completion",
+      "security_definer": true
+    },
+    {
+      "args": "p_task_id uuid, p_photo_path text",
+      "config": "search_path=public",
+      "def": "CREATE OR REPLACE FUNCTION public.submit_completion(p_task_id uuid, p_photo_path text) RETURNS uuid LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public' AS $function$ declare v_task tasks%rowtype; v_existing task_completions%rowtype; v_completion_id uuid; v_tz text; v_date date; begin select * into v_task from tasks where id = p_task_id; if not found then raise exception 'task not found'; end if; if v_task.archived_at is not null then raise exception 'goal is archived'; end if; if v_task.assigned_to <> auth.uid() then raise exception 'not your goal'; end if; if not exists ( select 1 from couples where id = v_task.couple_id and (user1_id = auth.uid() or user2_id = auth.uid()) ) then raise exception 'not authorized'; end if; select coalesce(timezone, 'UTC') into v_tz from profiles where id = auth.uid(); begin v_date := (now() at time zone v_tz)::date; exception when others then v_date := (now() at time zone 'UTC')::date; end; perform record_today_schedule(); select * into v_existing from task_completions where task_id = p_task_id and scheduled_date = v_date for update; if found then if v_existing.status = 'approved' then raise exception 'already confirmed for this date'; end if; update task_completions set photo_url = p_photo_path, submitted_at = now() where id = v_existing.id; return v_existing.id; end if; insert into task_completions (task_id, submitted_by, photo_url, status, scheduled_date, submitted_at) values (p_task_id, auth.uid(), p_photo_path, 'submitted', v_date, now()) returning id into v_completion_id; return v_completion_id; end; $function$",
+      "name": "submit_completion",
+      "security_definer": true
+    }
+  ],
+  "function_grants": [
+    {
+      "grantee": "anon",
+      "privilege_type": "EXECUTE",
+      "routine_name": "approve_completion"
+    },
+    {
+      "grantee": "anon",
+      "privilege_type": "EXECUTE",
+      "routine_name": "generate_invite"
+    },
+    {
+      "grantee": "anon",
+      "privilege_type": "EXECUTE",
+      "routine_name": "handle_new_user"
+    },
+    {
+      "grantee": "anon",
+      "privilege_type": "EXECUTE",
+      "routine_name": "my_couple_id"
+    },
+    {
+      "grantee": "anon",
+      "privilege_type": "EXECUTE",
+      "routine_name": "record_today_schedule"
+    },
+    {
+      "grantee": "anon",
+      "privilege_type": "EXECUTE",
+      "routine_name": "redeem_invite"
+    },
+    {
+      "grantee": "anon",
+      "privilege_type": "EXECUTE",
+      "routine_name": "submit_completion"
+    },
+    {
+      "grantee": "authenticated",
+      "privilege_type": "EXECUTE",
+      "routine_name": "approve_completion"
+    },
+    {
+      "grantee": "authenticated",
+      "privilege_type": "EXECUTE",
+      "routine_name": "generate_invite"
+    },
+    {
+      "grantee": "authenticated",
+      "privilege_type": "EXECUTE",
+      "routine_name": "handle_new_user"
+    },
+    {
+      "grantee": "authenticated",
+      "privilege_type": "EXECUTE",
+      "routine_name": "my_couple_id"
+    },
+    {
+      "grantee": "authenticated",
+      "privilege_type": "EXECUTE",
+      "routine_name": "record_today_schedule"
+    },
+    {
+      "grantee": "authenticated",
+      "privilege_type": "EXECUTE",
+      "routine_name": "redeem_invite"
+    },
+    {
+      "grantee": "authenticated",
+      "privilege_type": "EXECUTE",
+      "routine_name": "submit_completion"
+    },
+    {
+      "grantee": "PUBLIC",
+      "privilege_type": "EXECUTE",
+      "routine_name": "approve_completion"
+    },
+    {
+      "grantee": "PUBLIC",
+      "privilege_type": "EXECUTE",
+      "routine_name": "generate_invite"
+    },
+    {
+      "grantee": "PUBLIC",
+      "privilege_type": "EXECUTE",
+      "routine_name": "handle_new_user"
+    },
+    {
+      "grantee": "PUBLIC",
+      "privilege_type": "EXECUTE",
+      "routine_name": "my_couple_id"
+    },
+    {
+      "grantee": "PUBLIC",
+      "privilege_type": "EXECUTE",
+      "routine_name": "record_today_schedule"
+    },
+    {
+      "grantee": "PUBLIC",
+      "privilege_type": "EXECUTE",
+      "routine_name": "redeem_invite"
+    },
+    {
+      "grantee": "PUBLIC",
+      "privilege_type": "EXECUTE",
+      "routine_name": "submit_completion"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "EXECUTE",
+      "routine_name": "approve_completion"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "EXECUTE",
+      "routine_name": "generate_invite"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "EXECUTE",
+      "routine_name": "handle_new_user"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "EXECUTE",
+      "routine_name": "my_couple_id"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "EXECUTE",
+      "routine_name": "record_today_schedule"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "EXECUTE",
+      "routine_name": "redeem_invite"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "EXECUTE",
+      "routine_name": "submit_completion"
+    }
+  ],
+  "policies": [
+    {
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "policyname": "couple members access completions",
+      "qual": "(task_id IN ( SELECT t.id FROM (tasks t JOIN couples c ON ((c.id = t.couple_id))) WHERE ((c.user1_id = auth.uid()) OR (c.user2_id = auth.uid()))))",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "task_completions",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "policyname": "couple members access tasks",
+      "qual": "(couple_id IN ( SELECT couples.id FROM couples WHERE ((couples.user1_id = auth.uid()) OR (couples.user2_id = auth.uid()))))",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "tasks",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "couple can upload own completion photos",
+      "qual": null,
+      "roles": "{public}",
+      "schemaname": "storage",
+      "tablename": "objects",
+      "with_check": "((bucket_id = 'completion-photos'::text) AND (EXISTS ( SELECT 1 FROM couples WHERE (((couples.id)::text = (storage.foldername(objects.name))[1]) AND ((couples.user1_id = auth.uid()) OR (couples.user2_id = auth.uid()))))))"
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "insert own goals",
+      "qual": null,
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "tasks",
+      "with_check": "((couple_id = my_couple_id()) AND (assigned_to = auth.uid()))"
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "insert own profile",
+      "qual": null,
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "profiles",
+      "with_check": "(id = auth.uid())"
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "send note",
+      "qual": null,
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "love_notes",
+      "with_check": "((couple_id = my_couple_id()) AND (sender_id = auth.uid()))"
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "couple can read own completion photos",
+      "qual": "((bucket_id = 'completion-photos'::text) AND (EXISTS ( SELECT 1 FROM couples WHERE (((couples.id)::text = (storage.foldername(objects.name))[1]) AND ((couples.user1_id = auth.uid()) OR (couples.user2_id = auth.uid()))))))",
+      "roles": "{public}",
+      "schemaname": "storage",
+      "tablename": "objects",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "select couple day schedules",
+      "qual": "(EXISTS ( SELECT 1 FROM couples WHERE (((couples.user1_id = auth.uid()) OR (couples.user2_id = auth.uid())) AND ((couples.user1_id = day_schedules.user_id) OR (couples.user2_id = day_schedules.user_id)))))",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "day_schedules",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "select couple notes",
+      "qual": "(couple_id = my_couple_id())",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "love_notes",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "select own couple completions",
+      "qual": "(task_id IN ( SELECT tasks.id FROM tasks WHERE (tasks.couple_id = my_couple_id())))",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "task_completions",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "select own couple tasks",
+      "qual": "(couple_id = my_couple_id())",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "tasks",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "select own couple",
+      "qual": "((user1_id = auth.uid()) OR (user2_id = auth.uid()))",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "couples",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "select own invites",
+      "qual": "(created_by = auth.uid())",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "couple_invites",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "select own or partner profile",
+      "qual": "((id = auth.uid()) OR (id IN ( SELECT CASE WHEN (couples.user1_id = auth.uid()) THEN couples.user2_id ELSE couples.user1_id END AS user1_id FROM couples WHERE ((couples.user1_id = auth.uid()) OR (couples.user2_id = auth.uid())))))",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "profiles",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "view own or partner profile",
+      "qual": "((id = auth.uid()) OR (id IN ( SELECT CASE WHEN (couples.user1_id = auth.uid()) THEN couples.user2_id ELSE couples.user1_id END AS user1_id FROM couples WHERE ((couples.user1_id = auth.uid()) OR (couples.user2_id = auth.uid())))))",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "profiles",
+      "with_check": null
+    },
+    {
+      "cmd": "UPDATE",
+      "permissive": "PERMISSIVE",
+      "policyname": "dismiss couple notes",
+      "qual": "(couple_id = my_couple_id())",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "love_notes",
+      "with_check": null
+    },
+    {
+      "cmd": "UPDATE",
+      "permissive": "PERMISSIVE",
+      "policyname": "update own goals",
+      "qual": "((couple_id = my_couple_id()) AND (assigned_to = auth.uid()))",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "tasks",
+      "with_check": null
+    },
+    {
+      "cmd": "UPDATE",
+      "permissive": "PERMISSIVE",
+      "policyname": "update own profile",
+      "qual": "(id = auth.uid())",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "profiles",
+      "with_check": null
+    }
+  ],
+  "triggers": [
+    {
+      "def": "CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION handle_new_user()",
+      "tbl": "auth.users",
+      "tgname": "on_auth_user_created"
+    }
+  ]
+}
