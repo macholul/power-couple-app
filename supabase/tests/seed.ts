@@ -16,9 +16,11 @@ export interface SignUp {
 }
 
 export async function signUp(db: PGlite, person: SignUp): Promise<string> {
+  // the app picks the character from gender until characters can be chosen
+  const character = person.character ?? (person.gender === 'male' ? 'baris' : 'mae');
   const metadata: Record<string, string> = {
     display_name: person.name,
-    avatar_character: person.character ?? 'mae',
+    avatar_character: character,
   };
   if (person.gender) metadata.gender = person.gender;
 
@@ -32,7 +34,7 @@ export async function signUp(db: PGlite, person: SignUp): Promise<string> {
   await asUser(db, id, (tx) =>
     tx.query(
       `update public.profiles set avatar_character = $2, timezone = $3 where id = $1`,
-      [id, person.character ?? 'mae', person.timezone ?? 'UTC'],
+      [id, character, person.timezone ?? 'UTC'],
     ),
   );
   return id;
@@ -45,15 +47,18 @@ export async function generateInvite(db: PGlite, userId: string): Promise<string
   });
 }
 
-export async function redeemInvite(db: PGlite, userId: string, code: string): Promise<string> {
+/** The couple id, or null when no live code matched (a recorded miss). */
+export async function redeemInvite(db: PGlite, userId: string, code: string): Promise<string | null> {
   return asUser(db, userId, async (tx) => {
-    const { rows } = await tx.query<{ id: string }>('select public.redeem_invite($1) as id', [code]);
+    const { rows } = await tx.query<{ id: string | null }>('select public.redeem_invite($1) as id', [code]);
     return rows[0].id;
   });
 }
 
 export async function pair(db: PGlite, inviter: string, invitee: string): Promise<string> {
-  return redeemInvite(db, invitee, await generateInvite(db, inviter));
+  const coupleId = await redeemInvite(db, invitee, await generateInvite(db, inviter));
+  if (!coupleId) throw new Error('a freshly generated code did not redeem');
+  return coupleId;
 }
 
 export async function addGoal(

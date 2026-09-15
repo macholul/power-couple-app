@@ -113,7 +113,8 @@ describe('pairing again', () => {
     await pair(db, baris, mae); // Mae redeems Baris's code instead
     await endCouple(db, mae);
 
-    assert.equal(await errorOf(redeemInvite(db, noah, maesCode)), 'invite not found');
+    assert.equal(await redeemInvite(db, noah, maesCode), null, 'no couple');
+    assert.equal(await count(db, noah, 'select id from couples'), 0);
   });
 
   test('nobody can be in two active couples, whatever writes the row', async () => {

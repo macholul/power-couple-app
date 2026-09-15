@@ -25,7 +25,19 @@ export const migrationFiles = () =>
 export async function buildDatabase({ through }: { through?: string } = {}): Promise<PGlite> {
   const db = await PGlite.create();
   await db.exec(read(join(TESTS, 'platform.sql')));
+  await migrate(db, { through });
+  return db;
+}
+
+/**
+ * Applies the migration files after `after` (exclusive) through `through`
+ * (inclusive). With both left out, that is all of them. A test builds up to
+ * the file before a change, seeds data the old way, then calls this to see
+ * what the change does to rows that already exist.
+ */
+export async function migrate(db: PGlite, { after, through }: { after?: string; through?: string } = {}) {
   for (const file of migrationFiles()) {
+    if (after && file <= after) continue;
     if (through && file > through) break;
     try {
       await db.exec(read(join(MIGRATIONS, file)));
@@ -33,7 +45,6 @@ export async function buildDatabase({ through }: { through?: string } = {}): Pro
       throw new Error(`${file}: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
-  return db;
 }
 
 export async function exportCatalog(db: PGlite): Promise<Catalog> {
