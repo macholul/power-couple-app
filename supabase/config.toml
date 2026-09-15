@@ -242,10 +242,16 @@ otp_expiry = 3600
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
-# Uncomment to customize email template
-# [auth.email.template.invite]
-# subject = "You have been invited"
-# content_path = "./supabase/templates/invite.html"
+# The app asks for the code from these emails, so both carry {{ .Token }}.
+# This file configures a local stack only: production's copies are pasted
+# into the dashboard (docs/app-store/README.md, step 2).
+[auth.email.template.confirmation]
+subject = "Your powercouple code"
+content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.recovery]
+subject = "Reset your powercouple password"
+content_path = "./supabase/templates/recovery.html"
 
 # Uncomment to customize notification email template
 # [auth.email.notification.password_changed]

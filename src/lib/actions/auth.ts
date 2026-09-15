@@ -1,7 +1,28 @@
+import type { AuthError } from '@supabase/supabase-js';
+
 import { supabase } from '@/lib/supabase';
-import type { AvatarCharacter } from '@/lib/types/database';
+import { characterFor } from '@/lib/people';
+import type { Gender } from '@/lib/types/database';
 
 export type AuthActionState = { error: string | null };
+
+/** NIST SP 800-63B's floor for passwords people choose themselves. */
+export const MIN_PASSWORD_LENGTH = 8;
+/** matches profiles_display_name_length in the database */
+export const MAX_NAME_LENGTH = 30;
+
+const describe = (error: AuthError) => error.message.toLowerCase();
+
+const tooShort = (password: string): AuthActionState | null =>
+  password.length < MIN_PASSWORD_LENGTH
+    ? { error: `passwords need at least ${MIN_PASSWORD_LENGTH} characters` }
+    : null;
+
+/** Email codes are 6 digits by default and up to 10 if the project says so. */
+function codeFrom(input: string): string | null {
+  const code = input.replace(/\s/g, '');
+  return /^\d{6,10}$/.test(code) ? code : null;
+}
 
 /** The device's IANA zone, or UTC if it reports something unusable. */
 export function deviceTimeZone(): string {
@@ -15,9 +36,15 @@ export function deviceTimeZone(): string {
   }
 }
 
-export async function signIn(email: string, password: string): Promise<AuthActionState> {
+export async function signIn(
+  email: string,
+  password: string,
+): Promise<AuthActionState & { unconfirmed?: boolean }> {
   const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) return { error: error.message.toLowerCase() };
+  if (error?.code === 'email_not_confirmed') {
+    return { error: 'confirm your email first with the code we sent you', unconfirmed: true };
+  }
+  if (error) return { error: describe(error) };
   // No redirect: onAuthStateChange updates the session, the viewer reloads,
   // and the (auth) gate moves the user on by itself.
   return { error: null };
@@ -27,34 +54,90 @@ export async function signUp({
   name,
   email,
   password,
-  character,
+  gender,
 }: {
   name: string;
   email: string;
   password: string;
-  character: AvatarCharacter;
-}): Promise<AuthActionState> {
+  gender: Gender;
+}): Promise<AuthActionState & { needsConfirmation?: boolean }> {
   const trimmed = name.trim();
   if (!trimmed) return { error: 'what should we call you?' };
+  if (trimmed.length > MAX_NAME_LENGTH) {
+    return { error: `names can be up to ${MAX_NAME_LENGTH} characters` };
+  }
+  const weak = tooShort(password);
+  if (weak) return weak;
 
+  const character = characterFor(gender);
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { display_name: trimmed, avatar_character: character } },
+    // the signup trigger builds the profile from exactly these
+    options: { data: { display_name: trimmed, gender, avatar_character: character } },
   });
-  if (error) return { error: error.message.toLowerCase() };
+  if (error) return { error: describe(error) };
 
+  // With email confirmation on there is no session until the code is entered,
+  // and the profile already exists: the trigger made it from the metadata.
+  if (!data.session) return { error: null, needsConfirmation: true };
+
+  // Everything else in the profile came from the metadata; the time zone is
+  // the one thing only the phone knows. Without a session (above) it is set
+  // later, when the couple's data first loads.
   if (data.user) {
-    // The profile row is also healed on first load from this same metadata,
-    // so a failure here is recoverable rather than fatal.
-    await supabase.from('profiles').upsert({
-      id: data.user.id,
-      display_name: trimmed,
-      avatar_character: character,
-      timezone: deviceTimeZone(),
-    });
+    await supabase.from('profiles').update({ timezone: deviceTimeZone() }).eq('id', data.user.id);
   }
+  return { error: null };
+}
 
+/** Finishes a signup with the code from the confirmation email. */
+export async function confirmSignUp(email: string, input: string): Promise<AuthActionState> {
+  const token = codeFrom(input);
+  if (!token) return { error: 'enter the code from the email' };
+  const { error } = await supabase.auth.verifyOtp({ email, token, type: 'email' });
+  if (error) return { error: describe(error) };
+  return { error: null };
+}
+
+export async function resendSignUpCode(email: string): Promise<AuthActionState> {
+  const { error } = await supabase.auth.resend({ type: 'signup', email });
+  if (error) return { error: describe(error) };
+  return { error: null };
+}
+
+/** Emails a reset code. Succeeds for unknown addresses too, by design. */
+export async function sendPasswordReset(email: string): Promise<AuthActionState> {
+  if (!email) return { error: 'enter your email' };
+  const { error } = await supabase.auth.resetPasswordForEmail(email);
+  if (error) return { error: describe(error) };
+  return { error: null };
+}
+
+/**
+ * Spends the reset code, which signs the person in, then sets the password.
+ * The password is checked first so a bad one cannot use up the code.
+ */
+export async function resetPassword(
+  email: string,
+  input: string,
+  password: string,
+): Promise<AuthActionState> {
+  const weak = tooShort(password);
+  if (weak) return weak;
+  const token = codeFrom(input);
+  if (!token) return { error: 'enter the code from the email' };
+
+  const { error } = await supabase.auth.verifyOtp({ email, token, type: 'recovery' });
+  if (error) return { error: describe(error) };
+  return changePassword(password);
+}
+
+export async function changePassword(password: string): Promise<AuthActionState> {
+  const weak = tooShort(password);
+  if (weak) return weak;
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) return { error: describe(error) };
   return { error: null };
 }
 

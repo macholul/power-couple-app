@@ -9,18 +9,35 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 
-import { signIn, signUp } from '@/lib/actions/auth';
+import {
+  changePassword,
+  confirmSignUp,
+  MAX_NAME_LENGTH,
+  MIN_PASSWORD_LENGTH,
+  resendSignUpCode,
+  resetPassword,
+  sendPasswordReset,
+  signIn,
+  signOut,
+  signUp,
+} from '@/lib/actions/auth';
+import { useAuth } from '@/lib/auth';
 import { FloatingHearts } from '@/components/floating-hearts';
-import { HeartIcon } from '@/components/heart-icon';
+import { GenderChoice } from '@/components/gender-choice';
 import { Wordmark } from '@/components/wordmark';
 import { FONT, NEUTRAL } from '@/constants/theme';
-import type { AvatarCharacter } from '@/lib/types/database';
+import type { Gender } from '@/lib/types/database';
 
-const CHARACTERS: { key: AvatarCharacter; label: string; color: string; chip: string }[] = [
-  { key: 'mae', label: 'pink', color: '#E5628E', chip: '#FFD1E3' },
-  { key: 'baris', label: 'blue', color: '#5B8AD6', chip: '#C9DFFF' },
-];
+/**
+ * - login / signup  the two tabs
+ * - confirm         enter the code from the sign-up email (when the project
+ *                   requires email confirmation, signing up gives no session)
+ * - forgot          ask for a password reset code
+ * - reset           enter that code and a new password
+ */
+type Mode = 'login' | 'signup' | 'confirm' | 'forgot' | 'reset';
 
 function ToggleButton({
   active,
@@ -36,6 +53,8 @@ function ToggleButton({
   return (
     <Pressable
       onPress={onPress}
+      accessibilityRole="tab"
+      accessibilityState={{ selected: active }}
       style={[styles.toggle, active && { backgroundColor: activeColor }]}
     >
       <Text style={[styles.toggleLabel, active ? styles.toggleLabelOn : styles.toggleLabelOff]}>
@@ -45,72 +64,125 @@ function ToggleButton({
   );
 }
 
-function CharacterChoice({
-  value,
-  onChange,
-}: {
-  value: AvatarCharacter;
-  onChange: (next: AvatarCharacter) => void;
-}) {
+function TextLink({ label, onPress }: { label: string; onPress: () => void }) {
   return (
-    <View style={styles.characterRow}>
-      {CHARACTERS.map((option) => {
-        const active = value === option.key;
-        return (
-          <Pressable
-            key={option.key}
-            onPress={() => onChange(option.key)}
-            style={({ pressed }) => [
-              styles.character,
-              {
-                borderColor: active ? option.color : NEUTRAL.cardBorder,
-                backgroundColor: active ? option.chip : NEUTRAL.inputBg,
-                transform: [{ scale: pressed ? 0.97 : 1 }],
-              },
-            ]}
-          >
-            <HeartIcon size={14} color={active ? option.color : '#E8D5C4'} />
-            <Text
-              style={[styles.characterLabel, { color: active ? option.color : NEUTRAL.muted }]}
-            >
-              {option.label}
-            </Text>
-          </Pressable>
-        );
-      })}
-    </View>
+    <Pressable onPress={onPress} accessibilityRole="button" style={styles.textLink} hitSlop={6}>
+      <Text style={styles.textLinkLabel}>{label}</Text>
+    </Pressable>
   );
 }
 
 export default function LoginScreen() {
-  const [mode, setMode] = useState<'login' | 'signup'>('login');
-  const [character, setCharacter] = useState<AvatarCharacter>('mae');
+  const router = useRouter();
+  const { recovering } = useAuth();
+  const [mode, setMode] = useState<Mode>('login');
+  const [gender, setGender] = useState<Gender | null>(null);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
-  const isLogin = mode === 'login';
+  // A verified reset code has already signed the person in; all that is left
+  // is choosing the new password, whatever this screen was showing.
+  const current: Mode = recovering ? 'reset' : mode;
+  const isLogin = current === 'login';
+  const address = email.trim();
 
-  const submit = async () => {
+  const goTo = (next: Mode, message: string | null = null) => {
+    setMode(next);
+    setError(null);
+    setNotice(message);
+    setPending(false);
+  };
+
+  const begin = () => {
     setPending(true);
     setError(null);
-    const result = isLogin
-      ? await signIn(email.trim(), password)
-      : await signUp({ name, email: email.trim(), password, character });
-    // On success the gate navigates away and this screen unmounts, so only the
-    // failure path needs to put the form back.
-    if (result.error) {
-      setError(result.error);
-      setPending(false);
+    setNotice(null);
+  };
+
+  // On success most actions sign in, the gate navigates away and this screen
+  // unmounts, so only failures need to put the form back.
+  const fail = (message: string) => {
+    setError(message);
+    setPending(false);
+  };
+
+  const submit = async () => {
+    if (pending) return;
+    switch (current) {
+      case 'login': {
+        begin();
+        const result = await signIn(address, password);
+        if (result.unconfirmed) goTo('confirm', result.error);
+        else if (result.error) fail(result.error);
+        return;
+      }
+      case 'signup': {
+        if (!gender) return fail('are you a woman or a man?');
+        begin();
+        const result = await signUp({ name, email: address, password, gender });
+        if (result.error) return fail(result.error);
+        if (result.needsConfirmation) {
+          setPassword('');
+          goTo('confirm', `we emailed a code to ${address}`);
+        }
+        return;
+      }
+      case 'confirm': {
+        begin();
+        const result = await confirmSignUp(address, code);
+        if (result.error) fail(result.error);
+        return;
+      }
+      case 'forgot': {
+        begin();
+        const result = await sendPasswordReset(address);
+        if (result.error) return fail(result.error);
+        setCode('');
+        setPassword('');
+        goTo('reset', `if ${address} has an account, we emailed it a code`);
+        return;
+      }
+      case 'reset': {
+        begin();
+        const result = recovering
+          ? await changePassword(password)
+          : await resetPassword(address, code, password);
+        if (result.error) fail(result.error);
+        return;
+      }
     }
   };
 
-  const switchMode = (next: 'login' | 'signup') => {
-    setMode(next);
-    setError(null);
+  const resend = async () => {
+    begin();
+    const result = await resendSignUpCode(address);
+    setPending(false);
+    if (result.error) setError(result.error);
+    else setNotice('we sent a new code');
   };
+
+  const leaveReset = async () => {
+    // the verified code left a session behind; without a new password, drop it
+    if (recovering) await signOut();
+    goTo('login');
+  };
+
+  const submitLabel = pending
+    ? 'one sec...'
+    : {
+        login: 'log in',
+        signup: 'create account',
+        confirm: 'confirm',
+        forgot: 'send code',
+        reset: 'save password',
+      }[current];
+
+  const accent = current === 'signup' ? '#5B8AD6' : '#E5628E';
 
   return (
     <KeyboardAvoidingView
@@ -130,25 +202,35 @@ export default function LoginScreen() {
           </View>
 
           <View style={styles.card}>
-            <View style={styles.toggleTrack}>
-              <ToggleButton
-                active={isLogin}
-                activeColor="#E5628E"
-                onPress={() => switchMode('login')}
-              >
-                log in
-              </ToggleButton>
-              <ToggleButton
-                active={!isLogin}
-                activeColor="#5B8AD6"
-                onPress={() => switchMode('signup')}
-              >
-                sign up
-              </ToggleButton>
-            </View>
+            {(current === 'login' || current === 'signup') && (
+              <View style={styles.toggleTrack} accessibilityRole="tablist">
+                <ToggleButton active={isLogin} activeColor="#E5628E" onPress={() => goTo('login')}>
+                  log in
+                </ToggleButton>
+                <ToggleButton active={!isLogin} activeColor="#5B8AD6" onPress={() => goTo('signup')}>
+                  sign up
+                </ToggleButton>
+              </View>
+            )}
+
+            {current === 'confirm' && (
+              <Text style={styles.stepTitle} accessibilityRole="header">
+                check your email
+              </Text>
+            )}
+            {current === 'forgot' && (
+              <Text style={styles.stepTitle} accessibilityRole="header">
+                reset your password
+              </Text>
+            )}
+            {current === 'reset' && (
+              <Text style={styles.stepTitle} accessibilityRole="header">
+                choose a new password
+              </Text>
+            )}
 
             <View style={styles.form}>
-              {!isLogin && (
+              {current === 'signup' && (
                 <>
                   <TextInput
                     style={styles.input}
@@ -156,56 +238,140 @@ export default function LoginScreen() {
                     placeholderTextColor={NEUTRAL.placeholder}
                     value={name}
                     onChangeText={setName}
+                    maxLength={MAX_NAME_LENGTH}
                     autoCapitalize="words"
                     autoCorrect={false}
+                    textContentType="givenName"
                     returnKeyType="next"
+                    accessibilityLabel="Your name"
                   />
-                  <CharacterChoice value={character} onChange={setCharacter} />
+                  <GenderChoice value={gender} onChange={setGender} />
                 </>
               )}
-              <TextInput
-                style={styles.input}
-                placeholder="email"
-                placeholderTextColor={NEUTRAL.placeholder}
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                autoComplete="email"
-                returnKeyType="next"
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="password"
-                placeholderTextColor={NEUTRAL.placeholder}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                autoCapitalize="none"
-                autoComplete={isLogin ? 'current-password' : 'new-password'}
-                returnKeyType="go"
-                onSubmitEditing={() => void submit()}
-              />
 
-              {error ? <Text style={styles.error}>{error}</Text> : null}
+              {(current === 'login' || current === 'signup' || current === 'forgot') && (
+                <TextInput
+                  style={styles.input}
+                  placeholder="email"
+                  placeholderTextColor={NEUTRAL.placeholder}
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  autoComplete="email"
+                  textContentType="emailAddress"
+                  returnKeyType={current === 'forgot' ? 'send' : 'next'}
+                  onSubmitEditing={current === 'forgot' ? () => void submit() : undefined}
+                  accessibilityLabel="Email"
+                />
+              )}
+
+              {(current === 'confirm' || (current === 'reset' && !recovering)) && (
+                <TextInput
+                  style={[styles.input, styles.codeInput]}
+                  placeholder="code from the email"
+                  placeholderTextColor={NEUTRAL.placeholder}
+                  value={code}
+                  onChangeText={(next) => setCode(next.replace(/\D/g, ''))}
+                  keyboardType="number-pad"
+                  maxLength={10}
+                  autoComplete="one-time-code"
+                  textContentType="oneTimeCode"
+                  returnKeyType={current === 'confirm' ? 'go' : 'next'}
+                  onSubmitEditing={current === 'confirm' ? () => void submit() : undefined}
+                  accessibilityLabel="Code from the email"
+                />
+              )}
+
+              {(current === 'login' || current === 'signup' || current === 'reset') && (
+                <TextInput
+                  style={styles.input}
+                  placeholder={
+                    current === 'login' ? 'password' : `new password (${MIN_PASSWORD_LENGTH}+ characters)`
+                  }
+                  placeholderTextColor={NEUTRAL.placeholder}
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry
+                  autoCapitalize="none"
+                  autoComplete={current === 'login' ? 'current-password' : 'new-password'}
+                  textContentType={current === 'login' ? 'password' : 'newPassword'}
+                  returnKeyType="go"
+                  onSubmitEditing={() => void submit()}
+                  accessibilityLabel={current === 'login' ? 'Password' : 'New password'}
+                />
+              )}
+
+              {notice ? (
+                <Text style={styles.notice} accessibilityLiveRegion="polite">
+                  {notice}
+                </Text>
+              ) : null}
+              {error ? (
+                <Text style={styles.error} accessibilityLiveRegion="assertive">
+                  {error}
+                </Text>
+              ) : null}
 
               <Pressable
                 onPress={() => void submit()}
                 disabled={pending}
+                accessibilityRole="button"
+                accessibilityState={{ disabled: pending, busy: pending }}
                 style={({ pressed }) => [
                   styles.submit,
                   {
-                    backgroundColor: isLogin ? '#E5628E' : '#5B8AD6',
+                    backgroundColor: accent,
                     opacity: pending ? 0.7 : 1,
                     transform: [{ scale: pressed ? 0.97 : 1 }],
                   },
                 ]}
               >
-                <Text style={styles.submitLabel}>
-                  {pending ? 'one sec...' : isLogin ? 'log in' : 'create account'}
-                </Text>
+                <Text style={styles.submitLabel}>{submitLabel}</Text>
               </Pressable>
+
+              {current === 'signup' && (
+                <Text style={styles.consent}>
+                  by creating an account you agree to our{' '}
+                  <Text
+                    style={styles.consentLink}
+                    accessibilityRole="link"
+                    onPress={() => router.push('/legal/terms')}
+                  >
+                    terms
+                  </Text>{' '}
+                  and{' '}
+                  <Text
+                    style={styles.consentLink}
+                    accessibilityRole="link"
+                    onPress={() => router.push('/legal/privacy')}
+                  >
+                    privacy policy
+                  </Text>
+                </Text>
+              )}
+
+              {current === 'login' && (
+                <TextLink label="forgot your password?" onPress={() => goTo('forgot')} />
+              )}
+              {current === 'confirm' && (
+                <View style={styles.linkRow}>
+                  <TextLink label="send a new code" onPress={() => void resend()} />
+                  <TextLink label="back to log in" onPress={() => goTo('login')} />
+                </View>
+              )}
+              {current === 'confirm' && (
+                <Text style={styles.hint}>
+                  if the email has a link instead, tap it, then come back and log in
+                </Text>
+              )}
+              {current === 'forgot' && (
+                <TextLink label="back to log in" onPress={() => goTo('login')} />
+              )}
+              {current === 'reset' && (
+                <TextLink label="cancel" onPress={() => void leaveReset()} />
+              )}
             </View>
           </View>
         </ScrollView>
@@ -252,6 +418,13 @@ const styles = StyleSheet.create({
   toggleLabel: { fontFamily: FONT.semibold, fontSize: 15 },
   toggleLabelOn: { color: '#FFFFFF' },
   toggleLabelOff: { color: NEUTRAL.muted },
+  stepTitle: {
+    fontFamily: FONT.semibold,
+    fontSize: 20,
+    color: NEUTRAL.ink,
+    textAlign: 'center',
+    marginBottom: 16,
+  },
   form: { gap: 12 },
   input: {
     borderWidth: 2,
@@ -269,18 +442,13 @@ const styles = StyleSheet.create({
     // renders this placeholder as "e m a i l".
     letterSpacing: 0,
   },
-  characterRow: { flexDirection: 'row', gap: 8 },
-  character: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    borderWidth: 2,
-    borderRadius: 16,
-    paddingVertical: 10,
+  codeInput: { textAlign: 'center', fontFamily: FONT.semibold, fontSize: 18 },
+  notice: {
+    fontFamily: FONT.medium,
+    fontSize: 13,
+    color: NEUTRAL.secondary,
+    textAlign: 'center',
   },
-  characterLabel: { fontFamily: FONT.semibold, fontSize: 14 },
   error: {
     fontFamily: FONT.medium,
     fontSize: 13,
@@ -299,4 +467,27 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   submitLabel: { fontFamily: FONT.semibold, fontSize: 17, color: '#FFFFFF' },
+  consent: {
+    fontFamily: FONT.medium,
+    fontSize: 12,
+    lineHeight: 17,
+    color: NEUTRAL.muted,
+    textAlign: 'center',
+  },
+  consentLink: { fontFamily: FONT.semibold, color: NEUTRAL.secondary, textDecorationLine: 'underline' },
+  textLink: { alignSelf: 'center', paddingVertical: 4 },
+  textLinkLabel: {
+    fontFamily: FONT.medium,
+    fontSize: 13,
+    color: NEUTRAL.muted,
+    textDecorationLine: 'underline',
+  },
+  linkRow: { flexDirection: 'row', justifyContent: 'center', gap: 18 },
+  hint: {
+    fontFamily: FONT.medium,
+    fontSize: 12,
+    lineHeight: 17,
+    color: NEUTRAL.placeholder,
+    textAlign: 'center',
+  },
 });
