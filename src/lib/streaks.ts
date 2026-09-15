@@ -40,7 +40,9 @@ export interface StreakSummary {
  * Past days with a `day_schedules` record are judged ONLY against that
  * frozen record, so editing a goal's weekdays later can never rewrite
  * history. Days without a record (before the feature, or the app was never
- * opened) fall back to deriving the schedule from the current goals.
+ * opened) fall back to deriving the schedule from the current goals. Goals in
+ * a record that are not among `tasks` belong to another couple and are
+ * ignored.
  *
  * `sides[0]` is the viewer; their timezone frames the month grid.
  */
@@ -73,11 +75,15 @@ export function computeStreaks(
       })),
   );
 
-  // per side: frozen schedule records keyed by their local date
+  // per side: frozen schedule records keyed by their local date. Only this
+  // couple's goals count: someone who paired before keeps the days they froze
+  // back then, and those name goals this couple can neither see nor confirm.
+  const coupleTaskIds = new Set(tasks.map((task) => task.id));
   const sideRecords = sides.map((side) => {
     const map = new Map<string, string[]>();
     for (const record of daySchedules) {
-      if (record.user_id === side.userId) map.set(record.date_key, record.task_ids);
+      if (record.user_id !== side.userId) continue;
+      map.set(record.date_key, record.task_ids.filter((taskId) => coupleTaskIds.has(taskId)));
     }
     return map;
   });

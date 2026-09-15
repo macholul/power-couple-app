@@ -11,11 +11,12 @@
  */
 import { addDaysToKey, dateKeyIn, monthStartOfKey, weekdayOfKey } from '@/lib/dates';
 import { computeStreaks, type StreakSide } from '@/lib/streaks';
+import { characterFor, genderOf, leftToRight, possessive } from '@/lib/people';
 import { THEMES, themeFor, otherCharacter } from '@/lib/theme';
 import { gateTarget, type ViewerState } from '@/lib/viewer';
 import { decodeBase64 } from '@/lib/photos';
 import { stageGeometry } from '@/components/character-stage';
-import type { DaySchedule, Task, TaskCompletion } from '@/lib/types/database';
+import type { DaySchedule, Profile, Task, TaskCompletion } from '@/lib/types/database';
 
 export interface TestResult {
   group: string;
@@ -190,6 +191,39 @@ export function runSelfTests(): TestResult[] {
     check('streaks', 'days before a goal existed are free', s.ownStreaks[0], 2);
   }
 
+  // H. someone who paired before keeps the days they froze back then; those
+  //    name goals from the other couple, which this couple cannot see
+  {
+    const tasks = [task({ id: 't1', assigned_to: U1 })];
+    const completions = [done('t1', '2026-03-14'), done('t1', '2026-03-12')];
+    const schedules: DaySchedule[] = [
+      { user_id: U1, date_key: '2026-03-13', task_ids: ['elsewhere'], updated_at: '2026-03-13T23:00:00Z' },
+    ];
+    const s = computeStreaks(utcSides, tasks, completions, schedules, NOW);
+    check('streaks', "another couple's frozen goals are not expected", s.ownStreaks[0], 2);
+    check('streaks', 'that day is free on the month grid', s.monthDays[12].level, 3);
+  }
+
+  // ----------------------------------------------------------------- people
+
+  check('people', 'gender is read when stored', genderOf({ gender: 'male', avatar_character: 'mae' }), 'male');
+  check('people', 'no gender: baris is a man', genderOf({ gender: null, avatar_character: 'baris' }), 'male');
+  check('people', 'no gender: mae is a woman', genderOf({ avatar_character: 'mae' }), 'female');
+  check('people', 'a woman is mae', characterFor('female'), 'mae');
+  check('people', 'a man is baris', characterFor('male'), 'baris');
+  check('people', 'her', possessive('female'), 'her');
+  check('people', 'his', possessive('male'), 'his');
+  {
+    type Person = Pick<Profile, 'id' | 'gender' | 'avatar_character'>;
+    const woman: Person = { id: 'w', gender: 'female', avatar_character: 'mae' };
+    const man: Person = { id: 'm', gender: 'male', avatar_character: 'baris' };
+    const otherWoman: Person = { id: 'o', gender: 'female', avatar_character: 'mae' };
+    const ids = (pair: { id: string }[]) => pair.map((person) => person.id);
+    check('people', 'woman viewing: she is on the left', ids(leftToRight(woman, man)), ['w', 'm']);
+    check('people', 'man viewing: she is still on the left', ids(leftToRight(man, woman)), ['w', 'm']);
+    check('people', 'same gender: the viewer is on the left', ids(leftToRight(otherWoman, woman)), ['o', 'w']);
+  }
+
   // ------------------------------------------------------------------ theme
 
   // themeFor mirrors the web's defaulting: anything that is not "baris" is mae
@@ -237,9 +271,12 @@ export function runSelfTests(): TestResult[] {
   };
 
   // A half-known state must never route: acting before the session is
-  // restored is what bounces users between screens on cold start.
-  for (const area of ['app', 'auth', 'pairing'] as const) {
+  // restored is what bounces users between screens on cold start. A failed
+  // load is not an answer either; the gate offers a retry in place.
+  const failed: ViewerState = { status: 'error', userId: U1 };
+  for (const area of ['app', 'auth', 'pairing', 'account'] as const) {
     check('gate', `loading stays put (${area})`, gateTarget(states.loading, area), null);
+    check('gate', `a failed load stays put (${area})`, gateTarget(failed, area), null);
   }
 
   check('gate', 'app + signed out -> login', gateTarget(states.signedOut, 'app'), '/login');
@@ -253,6 +290,10 @@ export function runSelfTests(): TestResult[] {
   check('gate', 'pairing + signed out -> login', gateTarget(states.signedOut, 'pairing'), '/login');
   check('gate', 'pairing + unpaired stays', gateTarget(states.unpaired, 'pairing'), null);
   check('gate', 'pairing + paired -> home', gateTarget(states.paired, 'pairing'), '/');
+
+  check('gate', 'account + signed out -> login', gateTarget(states.signedOut, 'account'), '/login');
+  check('gate', 'account + unpaired stays', gateTarget(states.unpaired, 'account'), null);
+  check('gate', 'account + paired stays', gateTarget(states.paired, 'account'), null);
 
   // -------------------------------------------------------------- photos
   //

@@ -4,8 +4,8 @@ export type InviteActionState = { error: string | null; code?: string };
 
 /**
  * Asks the database for a fresh 6-character code. generate_invite is
- * SECURITY DEFINER: it refuses if the caller is already paired, and
- * invalidates any of their earlier unused codes, so only the newest works.
+ * SECURITY DEFINER: it refuses if the caller is already paired, and deletes
+ * their earlier codes, so only the newest works. Codes last 7 days.
  */
 export async function createInvite(): Promise<InviteActionState> {
   const { data, error } = await supabase.rpc('generate_invite');
@@ -31,15 +31,19 @@ export async function existingInvite(userId: string): Promise<string | null> {
 }
 
 /**
- * redeem_invite does all the real checking in Postgres — unknown code,
- * expired, your own invite, inviter already paired — and creates the couple
- * row. Its messages are surfaced as-is, matching the web.
+ * redeem_invite does all the real checking in Postgres — expired, your own
+ * invite, inviter already paired, opposite genders, too many wrong tries —
+ * and creates the couple row. Its messages are surfaced as-is.
+ *
+ * A code that matches nothing is the one case it does not raise: it records
+ * the miss (an exception would roll that record back) and returns no couple.
  */
 export async function redeemInvite(code: string): Promise<InviteActionState> {
   const trimmed = code.trim();
   if (trimmed.length !== 6) return { error: 'codes are 6 characters' };
 
-  const { error } = await supabase.rpc('redeem_invite', { p_code: trimmed });
+  const { data, error } = await supabase.rpc('redeem_invite', { p_code: trimmed });
   if (error) return { error: error.message.toLowerCase() };
+  if (!data) return { error: 'no invite has that code' };
   return { error: null };
 }

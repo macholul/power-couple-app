@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -13,6 +13,7 @@ import { Press } from '@/components/press';
 import { Wordmark } from '@/components/wordmark';
 import { useCoupleData } from '@/lib/couple-data';
 import { addDaysToKey, dateKeyIn, weekdayOfKey } from '@/lib/dates';
+import { leftToRight } from '@/lib/people';
 import { computeStreaks } from '@/lib/streaks';
 import { otherCharacter, themeFor, type SideTheme } from '@/lib/theme';
 import type {
@@ -83,7 +84,7 @@ export default function HomeScreen() {
 function Home({ viewer }: { viewer: Viewer }) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { tasks, completions, notes, daySchedules, refresh } = useCoupleData();
+  const { tasks, completions, notes, daySchedules, loading, refresh } = useCoupleData();
 
   const viewerTheme = themeFor(viewer.profile.avatar_character);
   const partnerCharacter =
@@ -92,17 +93,11 @@ function Home({ viewer }: { viewer: Viewer }) {
       : viewer.partner.avatar_character;
   const partnerTheme = themeFor(partnerCharacter);
 
-  // pink (Mae) panel is always on the left, blue (Baris) on the right
-  const sides =
-    viewerTheme.key === 'mae'
-      ? [
-          { profile: viewer.profile, theme: viewerTheme },
-          { profile: viewer.partner, theme: partnerTheme },
-        ]
-      : [
-          { profile: viewer.partner, theme: partnerTheme },
-          { profile: viewer.profile, theme: viewerTheme },
-        ];
+  // the woman's panel on the left, the man's on the right
+  const sides = leftToRight(viewer.profile, viewer.partner).map((profile) => ({
+    profile,
+    theme: profile.id === viewer.userId ? viewerTheme : partnerTheme,
+  }));
 
   const sideGoals = [
     todayGoalsFor(sides[0].profile, tasks, completions),
@@ -173,6 +168,7 @@ function Home({ viewer }: { viewer: Viewer }) {
             reviewerName={nameOf(
               side.profile.id === viewer.userId ? viewer.partner : viewer.profile,
             )}
+            loading={loading}
             delay={index * 0.08}
             onChanged={refresh}
           />
@@ -222,19 +218,28 @@ function Home({ viewer }: { viewer: Viewer }) {
       )}
 
       <PopIn delay={0.16} style={styles.streakCard}>
-        <View style={styles.streakRow}>
+        <View
+          style={styles.streakRow}
+          accessible
+          accessibilityLabel={loading ? 'Loading streak' : `${coupleStreak} day streak together`}
+        >
           <View style={styles.streakBadge}>
             <HeartIcon size={26} color="#E5628E" />
           </View>
           <View>
             <View style={styles.streakNumberRow}>
-              <Text style={styles.streakNumber}>{coupleStreak}</Text>
+              {/* no number until it is real: a 0 that becomes 12 reads as a lost streak */}
+              <Text style={styles.streakNumber}>{loading ? '–' : coupleStreak}</Text>
               <Text style={styles.streakUnit}>day streak</Text>
             </View>
             <Text style={styles.streakCaption}>together, every single day</Text>
           </View>
         </View>
-        <MonthGrid levels={monthDays.map((day) => day.level)} />
+        {loading ? (
+          <ActivityIndicator color={NEUTRAL.muted} style={styles.gridLoading} />
+        ) : (
+          <MonthGrid levels={monthDays.map((day) => day.level)} />
+        )}
       </PopIn>
     </ScrollView>
   );
@@ -248,6 +253,7 @@ function SidePanel({
   note,
   viewerId,
   reviewerName,
+  loading,
   delay,
   onChanged,
 }: {
@@ -258,6 +264,7 @@ function SidePanel({
   note: LoveNote | null;
   viewerId: string;
   reviewerName: string;
+  loading: boolean;
   delay: number;
   onChanged: () => Promise<void>;
 }) {
@@ -303,10 +310,14 @@ function SidePanel({
           onChanged={onChanged}
         />
       ))}
-      {goals.length === 0 && (
-        <Text style={[styles.emptyLabel, { color: theme.mutedText }]}>
-          nothing scheduled today
-        </Text>
+      {loading ? (
+        <ActivityIndicator color={theme.mutedText} style={styles.panelLoading} />
+      ) : (
+        goals.length === 0 && (
+          <Text style={[styles.emptyLabel, { color: theme.mutedText }]}>
+            nothing scheduled today
+          </Text>
+        )
       )}
     </PopIn>
   );
@@ -367,6 +378,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingVertical: 6,
   },
+  panelLoading: { paddingVertical: 8 },
+  gridLoading: { marginTop: 16, marginBottom: 4 },
   missedCard: {
     marginTop: 14,
     marginHorizontal: 12,

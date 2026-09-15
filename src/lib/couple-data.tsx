@@ -95,6 +95,11 @@ export function CoupleDataProvider({ children }: { children: ReactNode }) {
       supabase.from('day_schedules').select('*').gte('date_key', since),
     ]);
 
+    // All or nothing. Empty lists from a failed request would read as "no
+    // goals, nothing done" and break a streak on screen; keeping the last
+    // good snapshot until the next refresh is the honest option.
+    if (tasks.error || completions.error || notes.error || daySchedules.error) return;
+
     setData({
       tasks: (tasks.data ?? []) as Task[],
       completions: (completions.data ?? []) as TaskCompletion[],
@@ -147,6 +152,9 @@ export function CoupleDataProvider({ children }: { children: ReactNode }) {
         Date.now() - lastRefresh.current > TICK_STALE_MS
       ) {
         void refresh();
+        // the couple itself can end on the partner's phone; re-reading the
+        // viewer is what sends this one back to the pairing screen
+        void refreshViewer();
       }
     }, TICK_INTERVAL_MS);
 
@@ -154,7 +162,7 @@ export function CoupleDataProvider({ children }: { children: ReactNode }) {
       subscription.remove();
       clearInterval(timer);
     };
-  }, [paired, refresh]);
+  }, [paired, refresh, refreshViewer]);
 
   return (
     <CoupleDataContext.Provider value={{ ...data, refresh }}>

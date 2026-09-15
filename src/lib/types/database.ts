@@ -1,11 +1,14 @@
 export type CompletionStatus = "submitted" | "approved";
 export type AvatarCharacter = "mae" | "baris";
+export type Gender = "female" | "male";
 
 export interface Profile {
   id: string;
   display_name: string | null;
   avatar_url: string | null;
   avatar_character: AvatarCharacter;
+  /** who can pair with whom: a couple is one of each */
+  gender: Gender;
   timezone: string | null;
   created_at: string;
 }
@@ -15,6 +18,8 @@ export interface Couple {
   user1_id: string;
   user2_id: string;
   created_at: string;
+  /** set when the couple ends; ended couples are invisible to their members */
+  ended_at?: string | null;
 }
 
 export interface Task {
