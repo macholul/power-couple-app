@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   Alert,
+  Linking,
   Modal,
   Pressable,
   StyleSheet,
@@ -85,11 +86,12 @@ export function GoalCard({
     setBusy(true);
     setError(null);
     setOptimistic({ state: 'proof', localUri: asset.uri });
-    const result = await submitProof(coupleId, taskId, {
-      uri: asset.uri,
-      width: asset.width,
-      height: asset.height,
-    });
+    const result = await submitProof(
+      coupleId,
+      taskId,
+      { uri: asset.uri, width: asset.width, height: asset.height },
+      photoPath, // a retake replaces this one
+    );
     setBusy(false);
     if (result.error) {
       setError(result.error);
@@ -125,7 +127,7 @@ export function GoalCard({
               onPress={() => void onPickPhoto()}
               disabled={busy}
               feel="hard"
-              accessibilityLabel="Add photo proof"
+              accessibilityLabel={`Add photo proof for ${label}`}
               style={[
                 styles.cameraButton,
                 {
@@ -146,7 +148,7 @@ export function GoalCard({
           <Pressable
             onPress={() => setExpanded(true)}
             accessibilityRole="button"
-            accessibilityLabel="View proof photo"
+            accessibilityLabel={`View proof photo for ${label}`}
           >
             <Image
               source={{ uri: photo }}
@@ -187,7 +189,7 @@ export function GoalCard({
           <Pressable
             onPress={() => setExpanded(true)}
             accessibilityRole="button"
-            accessibilityLabel="View proof photo"
+            accessibilityLabel={`View proof photo for ${label}, confirmed`}
           >
             <Image
               source={{ uri: photo }}
@@ -279,8 +281,10 @@ function useSignedPhoto(path: string | null): string | null {
 
 /**
  * The camera-or-library choice mobile Safari made for the web's file input.
- * Each branch asks for its own permission first: launching without one shows
- * an empty picker on iOS rather than an error.
+ *
+ * Only the camera asks for permission. The library opens the system photo
+ * picker, which runs outside the app and hands back just the chosen photo, so
+ * the app never needs access to the whole library (App Review 5.1.1(iii)).
  */
 async function pickPhoto(): Promise<ImagePicker.ImagePickerAsset | null> {
   const source = await new Promise<'camera' | 'library' | null>((resolve) => {
@@ -292,11 +296,19 @@ async function pickPhoto(): Promise<ImagePicker.ImagePickerAsset | null> {
   });
   if (!source) return null;
 
-  const permission =
-    source === 'camera'
-      ? await ImagePicker.requestCameraPermissionsAsync()
-      : await ImagePicker.requestMediaLibraryPermissionsAsync();
-  if (!permission.granted) return null;
+  if (source === 'camera') {
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permission.granted) {
+      // once declined, iOS never asks again; only Settings can turn it back on
+      if (!permission.canAskAgain) {
+        Alert.alert('camera is off', 'turn on camera access for powercouple in settings', [
+          { text: 'not now', style: 'cancel' },
+          { text: 'open settings', onPress: () => void Linking.openSettings() },
+        ]);
+      }
+      return null;
+    }
+  }
 
   // quality 1 here on purpose: lib/photos re-encodes at 0.8 after downscaling,
   // and compressing twice would only add artefacts

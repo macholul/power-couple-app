@@ -9,7 +9,10 @@ import { FONT, NEUTRAL } from '@/constants/theme';
 
 /** Port of components/GoalsEditor.tsx. */
 const DAY_LETTERS = ['s', 'm', 't', 'w', 't', 'f', 's'];
+const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const ALL_DAYS = [0, 1, 2, 3, 4, 5, 6];
+/** matches tasks_title_length in the database */
+const MAX_TITLE_LENGTH = 60;
 
 function WeekdayPills({
   selected,
@@ -28,6 +31,8 @@ function WeekdayPills({
           <Press
             key={day}
             onPress={() => onToggle(day)}
+            accessibilityLabel={DAY_NAMES[day]}
+            accessibilityState={{ selected: active }}
             style={[
               styles.pill,
               {
@@ -92,13 +97,15 @@ function GoalRow({
           onBlur={commitTitle}
           onSubmitEditing={commitTitle}
           editable={!isTemp}
+          maxLength={MAX_TITLE_LENGTH}
           returnKeyType="done"
+          accessibilityLabel="Goal name"
           style={styles.titleInput}
         />
         <Press
           onPress={onDelete}
           feel="hard"
-          accessibilityLabel="Delete goal"
+          accessibilityLabel={`Delete goal ${goal.title}`}
           style={[styles.deleteButton, { backgroundColor: theme.chip }]}
         >
           <View style={[styles.deleteStroke, { backgroundColor: theme.deep }]} />
@@ -216,6 +223,7 @@ export function GoalsEditor({
             onSubmitEditing={() => void onAdd()}
             placeholder="add a new goal"
             placeholderTextColor={NEUTRAL.placeholder}
+            maxLength={MAX_TITLE_LENGTH}
             returnKeyType="done"
             style={[styles.addInput, { borderColor: theme.dashedBorder }]}
           />

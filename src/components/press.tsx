@@ -1,5 +1,10 @@
 import type { ReactNode } from 'react';
-import { Pressable, type StyleProp, type ViewStyle } from 'react-native';
+import {
+  Pressable,
+  type AccessibilityState,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native';
 
 /**
  * Port of globals.css's `.press` / `.press-soft` / `.press-hard`, which were
@@ -18,6 +23,8 @@ export function Press({
   style,
   feel = 'normal',
   accessibilityLabel,
+  accessibilityHint,
+  accessibilityState,
   hitSlop,
 }: {
   children: ReactNode;
@@ -26,6 +33,8 @@ export function Press({
   style?: StyleProp<ViewStyle>;
   feel?: keyof typeof SCALES;
   accessibilityLabel?: string;
+  accessibilityHint?: string;
+  accessibilityState?: AccessibilityState;
   hitSlop?: number;
 }) {
   return (
@@ -34,6 +43,8 @@ export function Press({
       disabled={disabled}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
+      accessibilityState={{ disabled: !!disabled, ...accessibilityState }}
       hitSlop={hitSlop}
       style={({ pressed }) => [
         style,

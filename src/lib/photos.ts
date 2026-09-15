@@ -83,6 +83,21 @@ export async function uploadCompletionPhoto(
   return path;
 }
 
+/**
+ * Best effort, never throws. The database lets the uploader delete a photo
+ * only while no proof points at it, so this cannot take away a proof, and a
+ * refusal (or a database without that rule yet) just leaves the file.
+ */
+export async function removePhotos(paths: string[]): Promise<void> {
+  if (paths.length === 0) return;
+  try {
+    await supabase.storage.from(BUCKET).remove(paths);
+  } catch {
+    // an orphaned file costs a few kilobytes; a crash here would cost the proof
+  }
+  for (const path of paths) signedUrls.delete(path);
+}
+
 function randomId(): string {
   // react-native-get-random-values is imported by lib/supabase, so
   // crypto.randomUUID's underlying entropy source exists by the time any of

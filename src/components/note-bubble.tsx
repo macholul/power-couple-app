@@ -34,7 +34,8 @@ export function NoteBubble({
     <PopIn duration={400} style={styles.anchor}>
       <Press
         onPress={dismiss}
-        accessibilityLabel="Dismiss note"
+        accessibilityLabel={`Note: ${text}`}
+        accessibilityHint="Dismisses the note"
         style={[
           styles.bubble,
           {

@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { shrinkPhoto, uploadCompletionPhoto } from '@/lib/photos';
+import { removePhotos, shrinkPhoto, uploadCompletionPhoto } from '@/lib/photos';
 
 export type CompletionActionState = { error: string | null };
 
@@ -12,11 +12,15 @@ export type CompletionActionState = { error: string | null };
  * only the couple id is needed to build the storage path — the storage RLS
  * policy and the submit_completion RPC enforce that it is really the
  * viewer's, so nothing here is trusted.
+ *
+ * Unlike the web, it cleans up after itself: a photo the proof ends up not
+ * using (a failed submit, or the one a retake replaces) is deleted.
  */
 export async function submitProof(
   coupleId: string,
   taskId: string,
   photo: { uri: string; width: number; height: number },
+  replacing: string | null,
 ): Promise<CompletionActionState> {
   let path: string;
   try {
@@ -31,7 +35,11 @@ export async function submitProof(
     p_task_id: taskId,
     p_photo_path: path,
   });
-  if (error) return { error: error.message.toLowerCase() };
+  if (error) {
+    void removePhotos([path]);
+    return { error: error.message.toLowerCase() };
+  }
+  if (replacing && replacing !== path) void removePhotos([replacing]);
   return { error: null };
 }
 
