@@ -2,6 +2,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { BackChip } from '@/components/back-chip';
 import { CharacterStage } from '@/components/character-stage';
 import { GoalsEditor } from '@/components/goals-editor';
 import { HeartIcon } from '@/components/heart-icon';
@@ -10,6 +11,7 @@ import { Press } from '@/components/press';
 import { SendLove } from '@/components/send-love';
 import { signOut } from '@/lib/actions/auth';
 import { useCoupleData } from '@/lib/couple-data';
+import { genderOf, possessive } from '@/lib/people';
 import { computeStreaks } from '@/lib/streaks';
 import { otherCharacter, themeFor } from '@/lib/theme';
 import { useRequireViewer, type Viewer } from '@/lib/viewer';
@@ -24,7 +26,7 @@ export default function ProfileScreen() {
 function Profile({ viewer }: { viewer: Viewer }) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { tasks, completions, daySchedules, refresh } = useCoupleData();
+  const { tasks, completions, daySchedules, loading, refresh } = useCoupleData();
 
   const myGoals = tasks.filter(
     (task) => task.assigned_to === viewer.userId && !task.archived_at,
@@ -48,7 +50,7 @@ function Profile({ viewer }: { viewer: Viewer }) {
   );
 
   const partnerName = viewer.partner.display_name ?? 'your person';
-  const partnerPronoun = partnerTheme.key === 'baris' ? 'his' : 'her';
+  const partnerPronoun = possessive(genderOf(viewer.partner));
 
   return (
     <ScrollView
@@ -58,17 +60,19 @@ function Profile({ viewer }: { viewer: Viewer }) {
         { paddingTop: insets.top + 18, paddingBottom: insets.bottom + 32 },
       ]}
       keyboardShouldPersistTaps="handled"
+      // the goal inputs sit low on the page; keep the focused one above the keyboard
+      automaticallyAdjustKeyboardInsets
     >
       <View style={styles.header}>
-        <Press
-          onPress={() => router.back()}
-          accessibilityLabel="Back to home"
-          style={[styles.backChip, { shadowColor: theme.shadowBadge }]}
-        >
-          <View style={[styles.backArrow, { borderColor: theme.deep }]} />
-          <Text style={[styles.backLabel, { color: theme.deep }]}>home</Text>
-        </Press>
-        <Text style={styles.headerTitle}>my profile</Text>
+        <BackChip
+          label="home"
+          color={theme.deep}
+          shadowColor={theme.shadowBadge}
+          onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
+        />
+        <Text style={styles.headerTitle} accessibilityRole="header">
+          my profile
+        </Text>
         <View style={styles.headerSpacer} />
       </View>
 
@@ -96,7 +100,7 @@ function Profile({ viewer }: { viewer: Viewer }) {
         <View style={[styles.streakCard, { borderColor: theme.panelBorder }]}>
           <View style={[styles.diamond, { backgroundColor: theme.accent }]} />
           <Text style={[styles.streakNumber, { color: theme.accent }]}>
-            {ownStreaks[0]}
+            {loading ? '–' : ownStreaks[0]}
           </Text>
           <Text style={styles.streakCaption}>my streak</Text>
         </View>
@@ -104,7 +108,9 @@ function Profile({ viewer }: { viewer: Viewer }) {
           <View style={styles.heartSlot}>
             <HeartIcon size={17} color="#E5628E" />
           </View>
-          <Text style={[styles.streakNumber, { color: NEUTRAL.ink }]}>{coupleStreak}</Text>
+          <Text style={[styles.streakNumber, { color: NEUTRAL.ink }]}>
+            {loading ? '–' : coupleStreak}
+          </Text>
           <Text style={styles.streakCaption}>couple streak</Text>
         </View>
       </PopIn>
@@ -124,9 +130,14 @@ function Profile({ viewer }: { viewer: Viewer }) {
         onSent={refresh}
       />
 
-      <Press onPress={() => void signOut()} style={styles.logout}>
-        <Text style={styles.logoutLabel}>log out</Text>
-      </Press>
+      <View style={styles.footer}>
+        <Press onPress={() => router.push('/account')} style={styles.footerLink}>
+          <Text style={styles.footerLabel}>account settings</Text>
+        </Press>
+        <Press onPress={() => void signOut()} style={styles.footerLink}>
+          <Text style={styles.footerLabel}>log out</Text>
+        </Press>
+      </View>
     </ScrollView>
   );
 }
@@ -141,28 +152,6 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  backChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 999,
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 1,
-    shadowRadius: 5,
-  },
-  // the web's chevron: a square with two borders, rotated 45deg
-  backArrow: {
-    width: 8,
-    height: 8,
-    borderLeftWidth: 3,
-    borderBottomWidth: 3,
-    borderRadius: 1,
-    transform: [{ rotate: '45deg' }],
-  },
-  backLabel: { fontFamily: FONT.semibold, fontSize: 14 },
   headerTitle: { fontFamily: FONT.semibold, fontSize: 20, color: NEUTRAL.ink },
   headerSpacer: { width: 74 },
   heroCard: {
@@ -204,6 +193,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   goalsTitle: { fontFamily: FONT.semibold, fontSize: 16, marginBottom: 10 },
-  logout: { alignSelf: 'center', paddingVertical: 10, paddingHorizontal: 20, marginTop: 8 },
-  logoutLabel: { fontFamily: FONT.medium, fontSize: 13, color: NEUTRAL.muted },
+  footer: { flexDirection: 'row', justifyContent: 'center', gap: 4, marginTop: 8 },
+  footerLink: { paddingVertical: 10, paddingHorizontal: 14 },
+  footerLabel: { fontFamily: FONT.medium, fontSize: 13, color: NEUTRAL.muted },
 });

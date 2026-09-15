@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  AppState,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -10,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
+import { useFocusEffect, useRouter } from 'expo-router';
 
 import { Gate } from '@/components/gate';
 import { FloatingHearts } from '@/components/floating-hearts';
@@ -20,6 +22,8 @@ import { useRefreshViewer } from '@/lib/viewer';
 import { FONT, NEUTRAL } from '@/constants/theme';
 
 const CODE_PLACEHOLDER = '······';
+/** how often the inviter's screen checks whether their code was redeemed */
+const WATCH_INTERVAL_MS = 5_000;
 
 function YourCodePanel({ userId }: { userId: string }) {
   const [code, setCode] = useState<string | null>(null);
@@ -68,7 +72,11 @@ function YourCodePanel({ userId }: { userId: string }) {
     <View style={styles.maePanel}>
       <Text style={styles.maeTitle}>your code</Text>
 
-      <View style={styles.codeRow}>
+      <View
+        style={styles.codeRow}
+        accessible
+        accessibilityLabel={code ? `Your code: ${code.split('').join(' ')}` : 'Making your code'}
+      >
         {chars.map((char, index) => (
           <View key={index} style={styles.codeBox}>
             <Text style={styles.codeChar}>{char}</Text>
@@ -170,6 +178,21 @@ export default function PairingScreen() {
 
 function PairingContent() {
   const { user } = useAuth();
+  const router = useRouter();
+  const refreshViewer = useRefreshViewer();
+
+  // The partner redeems the code on their own phone, so nothing here would
+  // notice. Re-reading the couple every few seconds lets the gate move this
+  // screen on by itself once they have.
+  useFocusEffect(
+    useCallback(() => {
+      const timer = setInterval(() => {
+        if (AppState.currentState === 'active') void refreshViewer();
+      }, WATCH_INTERVAL_MS);
+      return () => clearInterval(timer);
+    }, [refreshViewer]),
+  );
+
   if (!user) return null; // the gate is already routing away
 
   return (
@@ -186,7 +209,7 @@ function PairingContent() {
         >
           <View style={styles.header}>
             <Text style={styles.heading}>pair with your person</Text>
-            <Text style={styles.subheading}>one code links your two accounts forever</Text>
+            <Text style={styles.subheading}>one code links your two accounts</Text>
           </View>
 
           <YourCodePanel userId={user.id} />
@@ -201,9 +224,22 @@ function PairingContent() {
 
           <View style={styles.footer}>
             <Text style={styles.signedInAs}>signed in as {user.email}</Text>
-            <Pressable onPress={() => void signOut()} style={styles.logout}>
-              <Text style={styles.logoutLabel}>log out</Text>
-            </Pressable>
+            <View style={styles.footerLinks}>
+              <Pressable
+                onPress={() => router.push('/account')}
+                accessibilityRole="button"
+                style={styles.logout}
+              >
+                <Text style={styles.logoutLabel}>account</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => void signOut()}
+                accessibilityRole="button"
+                style={styles.logout}
+              >
+                <Text style={styles.logoutLabel}>log out</Text>
+              </Pressable>
+            </View>
           </View>
         </ScrollView>
       </View>
@@ -332,6 +368,7 @@ const styles = StyleSheet.create({
 
   // --- footer ---
   footer: { alignItems: 'center', marginTop: 22 },
+  footerLinks: { flexDirection: 'row' },
   signedInAs: { fontFamily: FONT.medium, fontSize: 12, color: NEUTRAL.placeholder },
   logout: { paddingVertical: 8, paddingHorizontal: 20 },
   logoutLabel: {
