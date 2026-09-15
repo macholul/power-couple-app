@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { ScrollView, Text, View, StyleSheet } from 'react-native';
+import { Redirect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { runSelfTests } from '@/lib/self-test';
@@ -8,11 +9,17 @@ import { FONT, NEUTRAL } from '@/constants/theme';
 /**
  * Runs the ported pure logic on Hermes and reports every assertion.
  *
- * Kept as a real route (/self-test) rather than deleted: it costs nothing at
- * runtime and is the fastest way to find out whether an Expo SDK upgrade has
- * changed Hermes' Intl behaviour under the streak math.
+ * Kept as a real route (/self-test) rather than deleted: it is the fastest
+ * way to find out whether an Expo SDK upgrade has changed Hermes' Intl
+ * behaviour under the streak math. Development builds only.
  */
 export default function SelfTestScreen() {
+  // a development tool: release builds send anyone who finds the URL home
+  if (!__DEV__) return <Redirect href="/" />;
+  return <SelfTests />;
+}
+
+function SelfTests() {
   const results = useMemo(() => runSelfTests(), []);
   const failures = results.filter((r) => !r.pass);
   const groups = [...new Set(results.map((r) => r.group))];
