@@ -1,0 +1,107 @@
+# Privacy policy
+
+_Last updated 15 September 2026_
+
+## The short version
+
+powercouple is an app for two people to set goals and keep each other going. We collect what the app needs to do that, show it to you and the partner you pair with, and nothing more. We don’t sell your information, show ads, or track you across other apps and websites.
+
+This policy explains what we collect, why, who can see it, how long we keep it, and the choices you have. “We”, “us” and “our” mean [OPERATOR NAME], who publishes powercouple and is responsible for your information.
+
+## What we collect and why
+
+**Account.** Your email address and password. We use them to create your account, sign you in, keep your account secure, and send account emails such as sign-up and password reset codes. Your password is stored only in hashed form, which nobody can read, including us.
+
+**Profile.** The name you choose, whether you are a woman or a man, your character, and your phone’s time zone. Your name and character are how you and your partner appear to each other. Gender decides who can pair: a powercouple couple is one woman and one man. Your time zone makes each day start and end on your own calendar, so streaks are counted fairly.
+
+**What you share as a couple.** The goals you set and the days they are for, the photos you submit as proof, your partner’s confirmations, the notes you send, and a record of which goals were scheduled each day. This is the app itself: it exists so that you and your partner can see it.
+
+**Photos.** Only the photos you choose to submit. The camera opens only when you tap to take a proof photo. When you choose from your library, your phone’s own photo picker gives the app just the photo you pick, never the rest of your library. Photos are made smaller on your phone before they are uploaded.
+
+**Pairing.** The invite codes you create, and a short-lived record of wrong codes entered from your account, which stops anyone from guessing their way to someone else’s code.
+
+**Technical information.** When the app connects to our servers, our hosting provider records technical details such as IP address, device and app information, and the time. These logs are used to run the service and keep it secure.
+
+**What we don’t collect.** No analytics, no advertising identifiers, no location, and no contacts. The app contains no advertising or tracking code.
+
+## Our reasons for using it
+
+If you are in the European Economic Area or the United Kingdom, the law asks us to tell you the legal basis for each use of your information:
+
+- Providing the app you signed up for, including showing your information to your partner: to perform our contract with you (GDPR Article 6(1)(b)).
+- Keeping accounts secure, stopping abuse such as guessed invite codes, and keeping server logs: our legitimate interest in running a safe service (Article 6(1)(f)).
+- Keeping or disclosing information when the law requires it: to meet a legal obligation (Article 6(1)(c)).
+
+Your email address, password, name and gender are needed to create an account and pair, so without them we can’t provide the app. Everything else you add is up to you.
+
+## Who can see your information
+
+**Your partner.** While you are paired, your partner sees your name, character, goals, photo proofs, confirmations, notes and streaks, and you see theirs. When a couple ends, neither of you can see the other’s information any more.
+
+**Our service providers.** A small number of companies help us run powercouple. They use your information only on our instructions, to provide their service to us, under agreements that require them to protect it:
+
+- Supabase, Inc., for our database, sign-in, photo storage and server functions.
+- [EMAIL PROVIDER], for delivering account emails.
+
+**When the law requires it.** We disclose information when the law requires it, such as under a valid court order, and only what it requires. Unless the law forbids it, we will tell you first.
+
+**Nobody else.** We never sell or rent your information, and never share it for advertising. If powercouple is ever taken over by another company, we will tell you before your information moves and becomes subject to a different privacy policy.
+
+## Where your information is stored
+
+Your information is stored in Japan, in Supabase’s Tokyo data center, so if you use powercouple from another country, it is transferred there. The European Commission and the United Kingdom recognize Japan as protecting personal data adequately. Where a provider handles information from another country, for example to give support, it does so under safeguards such as the European Commission’s Standard Contractual Clauses.
+
+## How long we keep it
+
+- Your account, profile, and everything in your couples: until you delete your account.
+- Invite codes: until they are used or replaced, and never longer than 7 days.
+- Records of wrong invite codes: 15 minutes.
+- Server logs: up to 7 days.
+- Database backups, which contain account information but not photos: up to 7 days.
+- Email delivery records: as long as [EMAIL PROVIDER] keeps them under its own policy.
+
+We keep information longer only when the law requires it, or to deal with a legal claim.
+
+## Ending a couple, and deleting your account
+
+**Ending a couple.** Ending your couple, in account settings, unpairs you both straight away. Nothing is deleted: the couple’s goals, photos and notes are hidden from both of you, and come back if the same two of you pair again.
+
+**Goals and photos.** Deleting a goal takes it off your schedule, and its past proofs stay in your couple’s history. Retaking a proof photo deletes the photo it replaces.
+
+**Deleting your account.** Deleting your account, in account settings, permanently deletes your account, your profile, and every couple you have been part of, including the goals, photos, confirmations and notes shared in them. Because a couple belongs to both people in it, this also removes that history for your partner, and unpairs them. It happens immediately on our live systems; copies in backups are gone within 7 days.
+
+If you can’t use the app, email [CONTACT EMAIL] and we will delete your account for you once we have confirmed it is yours.
+
+## Your rights
+
+You can see and change most of your information in the app. In account settings you can change your name, change your gender while you are not paired, end your couple, and delete your account.
+
+Depending on where you live, including in the European Economic Area, the United Kingdom and California, you also have the right to:
+
+- get a copy of the personal information we hold about you, in a format you can take elsewhere;
+- have inaccurate information corrected;
+- have your information deleted;
+- object to, or ask us to restrict, how we use your information;
+- complain to your local data protection authority.
+
+To make a request, email [CONTACT EMAIL]. We will confirm the request comes from you, reply within one month, and never treat you differently for using your rights. We don’t sell or share personal information as California law defines those words, and we don’t make decisions about you by automated means.
+
+## How we protect it
+
+Information is encrypted between the app and our servers. On your phone, your sign-in is kept encrypted, with its key in the phone’s secure storage. Our database lets only you and your partner reach your couple’s information, and photos are private, opened only through links that expire. We look at your information only when you ask us for help, to keep the service secure, or when the law requires it.
+
+## Children
+
+powercouple is not for anyone under [MINIMUM AGE]. We don’t knowingly collect information from anyone younger. If you believe someone under [MINIMUM AGE] has an account, email [CONTACT EMAIL] and we will delete it.
+
+## Changes to this policy
+
+When we change this policy, we update the date at the top. If a change affects how your information is used in a way that matters, we will tell you in the app or by email before it takes effect.
+
+## Contact
+
+[OPERATOR NAME], [COUNTRY]. Email [CONTACT EMAIL] with any question about this policy or your information.
+
+---
+
+_Adapted from the Basecamp open-source policies (github.com/basecamp/policies), available under the Creative Commons Attribution 4.0 International license (CC BY 4.0). Rewritten throughout to describe powercouple._
