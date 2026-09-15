@@ -12,7 +12,7 @@ import { approveProof, generateInvite, redeemInvite, seedCouple, submitProof } f
 const BASELINE = '20260915000000_production_baseline.sql';
 const HARDENED = '20260915000100_close_write_holes.sql';
 
-async function couple(through: string) {
+async function couple(through?: string) {
   const db = await buildDatabase({ through });
   return { db, ...(await seedCouple(db)) };
 }
@@ -50,9 +50,11 @@ describe('production baseline: the holes are real', () => {
   });
 });
 
-describe('after closing the holes', () => {
+// Every later migration must keep these closed, so the suite runs twice.
+for (const [label, through] of [['right after the fix', HARDENED], ['on the latest schema', undefined]] as const) {
+describe(`after closing the holes, ${label}`, () => {
   test('a member cannot approve their own proof, by RPC or directly', async () => {
-    const { db, mae, baris, maeProof } = await couple(HARDENED);
+    const { db, mae, baris, maeProof } = await couple(through);
     assert.equal(await errorOf(approveProof(db, mae, maeProof)), 'cannot confirm your own submission');
     const changed = await asUser(db, mae, (tx) =>
       rowCount(tx.query(
@@ -62,7 +64,7 @@ describe('after closing the holes', () => {
   });
 
   test('a member cannot forge a completion', async () => {
-    const { db, mae, maeGoal } = await couple(HARDENED);
+    const { db, mae, maeGoal } = await couple(through);
     const error = await errorOf(asUser(db, mae, (tx) =>
       tx.query(
         `insert into task_completions (task_id, submitted_by, photo_url, status, scheduled_date)
@@ -71,7 +73,7 @@ describe('after closing the holes', () => {
   });
 
   test("a member cannot delete their partner's proofs or goals", async () => {
-    const { db, baris, maeGoal, maeProof } = await couple(HARDENED);
+    const { db, baris, maeGoal, maeProof } = await couple(through);
     await asUser(db, baris, async (tx) => {
       assert.equal(await rowCount(tx.query('delete from task_completions where id = $1 returning id', [maeProof])), 0);
       assert.equal(await rowCount(tx.query('delete from tasks where id = $1 returning id', [maeGoal])), 0);
@@ -80,7 +82,7 @@ describe('after closing the holes', () => {
   });
 
   test("a member cannot rewrite a note their partner sent", async () => {
-    const { db, mae, baris, coupleId } = await couple(HARDENED);
+    const { db, mae, baris, coupleId } = await couple(through);
     const noteId = await asUser(db, mae, async (tx) =>
       (await tx.query<{ id: string }>(
         `insert into love_notes (couple_id, sender_id, text) values ($1, $2, 'proud of you') returning id`,
@@ -91,14 +93,14 @@ describe('after closing the holes', () => {
   });
 
   test('an owner cannot move a goal’s creation date', async () => {
-    const { db, mae, maeGoal } = await couple(HARDENED);
+    const { db, mae, maeGoal } = await couple(through);
     const error = await errorOf(asUser(db, mae, (tx) =>
       tx.query(`update tasks set created_at = '2020-01-01' where id = $1`, [maeGoal])));
     assert.match(error ?? '', /permission denied/);
   });
 
   test('the invite, proof and schedule functions refuse anonymous callers', async () => {
-    const { db } = await couple(HARDENED);
+    const { db } = await couple(through);
     for (const call of ['generate_invite()', "redeem_invite('ABCDEF')", 'record_today_schedule()',
       "submit_completion(gen_random_uuid(), 'x')", 'approve_completion(gen_random_uuid())']) {
       assert.match(await errorOf(asAnon(db, (tx) => tx.query(`select ${call}`))) ?? '',
@@ -111,7 +113,7 @@ describe('after closing the holes', () => {
 
   describe('what both apps depend on still works', () => {
     test('submitting, retaking and partner approval', async () => {
-      const { db, mae, baris, maeGoal, coupleId, maeProof } = await couple(HARDENED);
+      const { db, mae, baris, maeGoal, coupleId, maeProof } = await couple(through);
       const retake = await submitProof(db, mae, maeGoal, `${coupleId}/${maeGoal}/b.jpg`);
       assert.equal(retake, maeProof, 'a retake replaces the pending proof');
       await approveProof(db, baris, maeProof);
@@ -121,7 +123,7 @@ describe('after closing the holes', () => {
     });
 
     test('owners rename, reschedule and archive their goals', async () => {
-      const { db, mae, maeGoal } = await couple(HARDENED);
+      const { db, mae, maeGoal } = await couple(through);
       await asUser(db, mae, async (tx) => {
         assert.equal(await rowCount(tx.query(
           `update tasks set title = 'run', updated_at = now() where id = $1 returning id`, [maeGoal])), 1);
@@ -133,7 +135,7 @@ describe('after closing the holes', () => {
     });
 
     test('both partners read each other’s profile, goals and proofs', async () => {
-      const { db, baris, mae } = await couple(HARDENED);
+      const { db, baris, mae } = await couple(through);
       await asUser(db, baris, async (tx) => {
         assert.equal(await rowCount(tx.query('select id from profiles where id = $1', [mae])), 1);
         assert.equal(await rowCount(tx.query('select id from tasks')), 2);
@@ -142,7 +144,7 @@ describe('after closing the holes', () => {
     });
 
     test('sending a note retires the sender’s older ones, and the partner dismisses', async () => {
-      const { db, mae, baris, coupleId } = await couple(HARDENED);
+      const { db, mae, baris, coupleId } = await couple(through);
       const send = (text: string) => asUser(db, mae, async (tx) => {
         await tx.query(`update love_notes set dismissed_at = now() where sender_id = $1 and dismissed_at is null`, [mae]);
         return (await tx.query<{ id: string }>(
@@ -159,7 +161,7 @@ describe('after closing the holes', () => {
     });
 
     test('recording today’s schedule and syncing a timezone', async () => {
-      const { db, mae } = await couple(HARDENED);
+      const { db, mae } = await couple(through);
       await asUser(db, mae, async (tx) => {
         await tx.query('select record_today_schedule()');
         assert.equal(await rowCount(tx.query(
@@ -168,3 +170,4 @@ describe('after closing the holes', () => {
     });
   });
 });
+}
