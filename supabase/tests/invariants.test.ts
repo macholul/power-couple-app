@@ -44,6 +44,15 @@ const RULES = {
       )
     order by 1`,
 
+  /** advisor 0004 */
+  tablesWithoutPrimaryKey: `
+    select c.oid::regclass::text as found
+    from pg_class c
+    where c.relnamespace in (select oid from pg_namespace where nspname in ('public', 'private'))
+      and c.relkind = 'r'
+      and not exists (select 1 from pg_constraint k where k.conrelid = c.oid and k.contype = 'p')
+    order by 1`,
+
   /** anon and authenticated hold every table privilege, so RLS is the only guard */
   tablesWithoutRls: `
     select c.oid::regclass::text as found
@@ -101,6 +110,11 @@ describe('each rule finds what the advisors found on the baseline', () => {
   test('policies not limited to signed-in users', async () => {
     assert.ok((await findings(db, RULES.policiesNotForAuthenticated)).length > 0);
   });
+});
+
+test('the primary key rule finds what the advisor found after 20260915000700', async () => {
+  const db = await buildDatabase({ through: '20260915000700_foreign_key_indexes.sql' });
+  assert.deepEqual(await findings(db, RULES.tablesWithoutPrimaryKey), ['private.invite_misses']);
 });
 
 describe('the latest schema breaks none of the rules', () => {
