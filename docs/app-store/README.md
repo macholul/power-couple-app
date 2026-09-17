@@ -4,25 +4,23 @@ Everything code can do is done and checked by `npm run preflight`. What is
 left needs a person: accounts, dashboards, legal details, and decisions. Work
 through it top to bottom. Each step says why it matters.
 
-## 1. Fill in who publishes the app
+## 1. Who publishes the app
 
-In `src/content/legal.ts`, replace every bracketed value in `OPERATOR`:
+Done, except one value. `OPERATOR` in `src/content/legal.ts` names Baris
+Turker in South Korea, with minimum age 14 (Korea's privacy law needs a
+parent's consent below 14, and the US's below 13).
 
-| Field | What to put |
-| --- | --- |
-| `name` | Your legal name, or your company's if you have one |
-| `email` | An address you will read: it gets privacy requests, reports and support mail |
-| `country` | Where you are based; its law governs the terms |
-| `minimumAge` | The youngest age allowed, e.g. `16`. Keep it no lower than the App Store age rating (step 5) |
-| `emailProvider` | The company you pick in step 2, e.g. `Resend` |
-
-Then read both policies once in full (`docs/legal/*.md` or in the app under
-account settings). They describe the app as it is on 15 September 2026. If
-anything is no longer true, change `src/content/legal.ts`, not the Markdown.
+Still open: `emailProvider`. Once you pick the email service in step 2, set it
+to the company and its country, e.g. `Resend, Inc. (United States)`; Korea's
+law asks for both. Then:
 
 ```bash
 npm run legal:export
 ```
+
+Read both policies once in full (`docs/legal/*.md` or in the app under
+account settings). If anything is no longer true, change
+`src/content/legal.ts`, not the Markdown.
 
 The privacy policy states that server logs and backups are kept for up to 7
 days. That holds on Supabase's Free and Pro plans; on Team or Enterprise,
@@ -32,31 +30,37 @@ update it.
 
 Project: `imhpwatxupusiiujwvdr`.
 
+Done: the minimum password length is 8 in production, pushed from
+`supabase/config.toml`.
+
+Your part:
+
 1. **Custom SMTP** (Authentication → Emails → SMTP Settings). Without it,
    Supabase only emails members of your Supabase team, at 2 emails an hour,
    so real users would never receive a sign-up or reset code. Supabase names
    Resend, AWS SES, Postmark, SendGrid, ZeptoMail and Brevo as options.
-2. **Email templates** (Authentication → Emails → Templates). The app asks for
-   the code from the email, not a link.
-   - *Confirm signup*: subject `Your powercouple code`, body from
-     `supabase/templates/confirmation.html`
-   - *Reset password*: subject `Reset your powercouple password`, body from
-     `supabase/templates/recovery.html`
-3. **Confirm email** on (Authentication → Sign In / Providers → Email). Do this
-   after steps 1 and 2, or new users get stuck waiting for mail that never
-   arrives.
-4. **Minimum password length** 8 (same page). The app already asks for 8; this
-   makes the server agree.
-5. **Leaked password protection** (same page, Pro plan): refuses passwords
-   known from breaches. Supabase's security advisor flags it until it is on.
 
-## 3. Deploy account deletion
+Then Claude, or you, can finish from the command line:
 
-App Review requires in-app account deletion, and the app's delete button
-calls this function. Until it is deployed, deleting an account shows an error.
+2. **Email templates.** Supabase refuses template changes until custom SMTP
+   is on. After that, `npx supabase config diff` should show only the two
+   templates (`supabase/templates/`), and `npx supabase config push` applies
+   them. The app asks for the code from the email, not a link, so this has to
+   happen before step 3.
+3. **Confirm email:** set `enable_confirmations = true` under `[auth.email]`
+   in `supabase/config.toml` and push. Doing this before steps 1 and 2 would
+   leave new users waiting for mail that never arrives.
+4. **Leaked password protection** (Pro plan only): refuses passwords known
+   from breaches. Supabase's security advisor flags it until it is on.
+
+## 3. Account deletion
+
+Done: `delete-account` has been deployed since 17 September 2026. It refuses
+anyone not signed in, which was checked against the live function. After
+changing it, redeploy:
 
 ```bash
-npx supabase functions deploy delete-account
+npx supabase functions deploy delete-account --use-api
 ```
 
 It needs no secrets set by hand: Supabase provides the project URL and keys
@@ -129,6 +133,14 @@ it and the terms and review notes state it. Know the risks before launch:
 
 Changing it later is one migration: drop the gender check from
 `redeem_invite()`.
+
+## 6b. If you sell in the EU or the UK
+
+GDPR expects a developer based outside the EU who serves EU users to name a
+representative in the EU (Article 27), and the UK has the same rule. The
+exemption for occasional processing is unlikely to fit an app people use
+daily. Paid services act as representatives. Alternatively, leave the EU and
+UK out of the app's availability in App Store Connect at first.
 
 ## 7. Optional cleanup
 
