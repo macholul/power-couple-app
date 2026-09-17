@@ -1,16 +1,16 @@
 # Terms of service
 
-_Last updated 15 September 2026_
+_Last updated 17 September 2026_
 
 ## The agreement
 
-These terms are an agreement between you and [OPERATOR NAME] (“we”, “us”), who publishes powercouple. By creating an account or using the app, you agree to them and to our privacy policy. If you don’t agree, please don’t use powercouple.
+These terms are an agreement between you and Baris Turker (“we”, “us”), who publishes powercouple. By creating an account or using the app, you agree to them and to our privacy policy. If you don’t agree, please don’t use powercouple.
 
 ## Your account
 
-- You must be at least [MINIMUM AGE] years old.
+- You must be at least 14 years old.
 - An account is for one real person. Automated and fake accounts are not allowed.
-- Use an email address you can receive mail at, keep your password to yourself, and tell us at [CONTACT EMAIL] if you think someone else has used your account.
+- Use an email address you can receive mail at, keep your password to yourself, and tell us at baristurkerlol@gmail.com if you think someone else has used your account.
 - You are responsible for what happens under your account.
 
 ## How powercouple works
@@ -28,7 +28,7 @@ Don’t use powercouple to:
 - get around the app’s security or limits, or reach accounts or information that aren’t yours;
 - copy, scrape, overload or interfere with the service.
 
-To report something that breaks these rules, email [CONTACT EMAIL] and we will look into it promptly. Ending your couple, in account settings, immediately stops the other person seeing your information.
+To report something that breaks these rules, email baristurkerlol@gmail.com and we will look into it promptly. Ending your couple, in account settings, immediately stops the other person seeing your information.
 
 ## Your content
 
@@ -58,7 +58,7 @@ We work to keep powercouple available and your information safe, but we can’t 
 
 ## Our app
 
-The app itself, including its name, design, characters and code, belongs to [OPERATOR NAME]. These terms don’t give you any right to use them other than by using powercouple.
+The app itself, including its name, design, characters and code, belongs to Baris Turker. These terms don’t give you any right to use them other than by using powercouple.
 
 ## Liability
 
@@ -68,15 +68,15 @@ Nothing in these terms limits liability that the law does not allow to be limite
 
 ## The App Store
 
-If you downloaded powercouple from Apple’s App Store, these terms are between you and [OPERATOR NAME], not Apple. Apple is not responsible for powercouple or its content and has no obligation to support it. Your licence to the app itself is Apple’s Licensed Application End User License Agreement; these terms cover your use of the powercouple service, and you must also follow the App Store’s usage rules.
+If you downloaded powercouple from Apple’s App Store, these terms are between you and Baris Turker, not Apple. Apple is not responsible for powercouple or its content and has no obligation to support it. Your licence to the app itself is Apple’s Licensed Application End User License Agreement; these terms cover your use of the powercouple service, and you must also follow the App Store’s usage rules.
 
 ## Governing law
 
-These terms are governed by the laws of [COUNTRY]. If you use powercouple as a consumer, you also keep the protection of the mandatory laws of the country where you live, and can bring claims in its courts.
+These terms are governed by the laws of South Korea. If you use powercouple as a consumer, you also keep the protection of the mandatory laws of the country where you live, and can bring claims in its courts.
 
 ## Contact
 
-[OPERATOR NAME], [COUNTRY]. Email [CONTACT EMAIL] with any question about these terms.
+Baris Turker, South Korea. Email baristurkerlol@gmail.com with any question about these terms.
 
 ---
 

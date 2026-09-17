@@ -1,12 +1,12 @@
 # Privacy policy
 
-_Last updated 15 September 2026_
+_Last updated 17 September 2026_
 
 ## The short version
 
 powercouple is an app for two people to set goals and keep each other going. We collect what the app needs to do that, show it to you and the partner you pair with, and nothing more. We don’t sell your information, show ads, or track you across other apps and websites.
 
-This policy explains what we collect, why, who can see it, how long we keep it, and the choices you have. “We”, “us” and “our” mean [OPERATOR NAME], who publishes powercouple and is responsible for your information.
+This policy explains what we collect, why, who can see it, how long we keep it, and the choices you have. “We”, “us” and “our” mean Baris Turker, who publishes powercouple and is responsible for your information.
 
 ## What we collect and why
 
@@ -22,7 +22,7 @@ This policy explains what we collect, why, who can see it, how long we keep it, 
 
 **Technical information.** When the app connects to our servers, our hosting provider records technical details such as IP address, device and app information, and the time. These logs are used to run the service and keep it secure.
 
-**What we don’t collect.** No analytics, no advertising identifiers, no location, and no contacts. The app contains no advertising or tracking code.
+**What we don’t collect.** No analytics, no advertising identifiers, no location, and no contacts. The app contains no cookies, advertising or tracking code.
 
 ## Our reasons for using it
 
@@ -40,16 +40,26 @@ Your email address, password, name and gender are needed to create an account an
 
 **Our service providers.** A small number of companies help us run powercouple. They use your information only on our instructions, to provide their service to us, under agreements that require them to protect it:
 
-- Supabase, Inc., for our database, sign-in, photo storage and server functions.
+- Supabase Pte. Ltd. (Singapore), for our database, sign-in, photo storage and server functions.
 - [EMAIL PROVIDER], for delivering account emails.
 
 **When the law requires it.** We disclose information when the law requires it, such as under a valid court order, and only what it requires. Unless the law forbids it, we will tell you first.
 
 **Nobody else.** We never sell or rent your information, and never share it for advertising. If powercouple is ever taken over by another company, we will tell you before your information moves and becomes subject to a different privacy policy.
 
-## Where your information is stored
+## Where your information goes
 
-Your information is stored in Japan, in Supabase’s Tokyo data center, so if you use powercouple from another country, it is transferred there. The European Commission and the United Kingdom recognize Japan as protecting personal data adequately. Where a provider handles information from another country, for example to give support, it does so under safeguards such as the European Commission’s Standard Contractual Clauses.
+Your information is stored in Japan, in our hosting provider’s Tokyo data center. We are based in South Korea, so for you this is a transfer abroad unless you live in Japan. The details:
+
+- What: everything described under “What we collect and why”.
+- To whom: Supabase Pte. Ltd., Singapore (privacy@supabase.com). It stores the information in Japan, and may reach it from Singapore and the United States to run and support the service.
+- Also: [EMAIL PROVIDER] receives your email address, to deliver account emails.
+- When and how: whenever you use the app, over encrypted connections.
+- Why: to host powercouple’s database, sign-in, photos and emails.
+- For how long: as described under “How long we keep it”.
+- Saying no: the app can’t work without these transfers. If you don’t want them, don’t create an account, or delete yours in account settings.
+
+The European Commission and the United Kingdom recognize Japan as protecting personal data adequately, and Supabase’s access from other countries is covered by the European Commission’s Standard Contractual Clauses.
 
 ## How long we keep it
 
@@ -62,6 +72,8 @@ Your information is stored in Japan, in Supabase’s Tokyo data center, so if yo
 
 We keep information longer only when the law requires it, or to deal with a legal claim.
 
+Information due for deletion is erased from our systems so that it can’t be recovered. We keep no paper records.
+
 ## Ending a couple, and deleting your account
 
 **Ending a couple.** Ending your couple, in account settings, unpairs you both straight away. Nothing is deleted: the couple’s goals, photos and notes are hidden from both of you, and come back if the same two of you pair again.
@@ -70,7 +82,7 @@ We keep information longer only when the law requires it, or to deal with a lega
 
 **Deleting your account.** Deleting your account, in account settings, permanently deletes your account, your profile, and every couple you have been part of, including the goals, photos, confirmations and notes shared in them. Because a couple belongs to both people in it, this also removes that history for your partner, and unpairs them. It happens immediately on our live systems; copies in backups are gone within 7 days.
 
-If you can’t use the app, email [CONTACT EMAIL] and we will delete your account for you once we have confirmed it is yours.
+If you can’t use the app, email baristurkerlol@gmail.com and we will delete your account for you once we have confirmed it is yours.
 
 ## Your rights
 
@@ -84,7 +96,12 @@ Depending on where you live, including in the European Economic Area, the United
 - object to, or ask us to restrict, how we use your information;
 - complain to your local data protection authority.
 
-To make a request, email [CONTACT EMAIL]. We will confirm the request comes from you, reply within one month, and never treat you differently for using your rights. We don’t sell or share personal information as California law defines those words, and we don’t make decisions about you by automated means.
+To make a request, email baristurkerlol@gmail.com. We will confirm the request comes from you, reply within one month, and never treat you differently for using your rights. We don’t sell or share personal information as California law defines those words, and we don’t make decisions about you by automated means.
+
+In Korea, you can also get help from these public bodies:
+
+- Personal Information Dispute Mediation Committee: www.kopico.go.kr, 1833-6972
+- Personal Information Infringement Report Center (KISA): privacy.kisa.or.kr, 118
 
 ## How we protect it
 
@@ -92,7 +109,11 @@ Information is encrypted between the app and our servers. On your phone, your si
 
 ## Children
 
-powercouple is not for anyone under [MINIMUM AGE]. We don’t knowingly collect information from anyone younger. If you believe someone under [MINIMUM AGE] has an account, email [CONTACT EMAIL] and we will delete it.
+powercouple is not for anyone under 14. We don’t knowingly collect information from anyone younger. If you believe someone under 14 has an account, email baristurkerlol@gmail.com and we will delete it.
+
+## Who is responsible for your privacy
+
+Baris Turker is responsible for protecting your personal information and for handling questions and complaints about it. Email baristurkerlol@gmail.com.
 
 ## Changes to this policy
 
@@ -100,7 +121,7 @@ When we change this policy, we update the date at the top. If a change affects h
 
 ## Contact
 
-[OPERATOR NAME], [COUNTRY]. Email [CONTACT EMAIL] with any question about this policy or your information.
+Baris Turker, South Korea. Email baristurkerlol@gmail.com with any question about this policy or your information.
 
 ---
 

@@ -24,6 +24,7 @@ import {
   signUp,
 } from '@/lib/actions/auth';
 import { useAuth } from '@/lib/auth';
+import { OPERATOR } from '@/content/legal';
 import { FloatingHearts } from '@/components/floating-hearts';
 import { GenderChoice } from '@/components/gender-choice';
 import { Wordmark } from '@/components/wordmark';
@@ -333,7 +334,8 @@ export default function LoginScreen() {
 
               {current === 'signup' && (
                 <Text style={styles.consent}>
-                  by creating an account you agree to our{' '}
+                  by creating an account you confirm you&apos;re {OPERATOR.minimumAge} or older and
+                  agree to our{' '}
                   <Text
                     style={styles.consentLink}
                     accessibilityRole="link"

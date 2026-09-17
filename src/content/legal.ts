@@ -5,33 +5,44 @@
  *
  * Both follow the structure of Basecamp's open-source policies
  * (https://github.com/basecamp/policies, CC BY 4.0), rewritten for this app
- * and checked against App Store Review Guideline 5.1.1 and GDPR Articles
- * 12–22. Facts about the service come from the project itself: the database
- * region, what the migrations keep and for how long, and Supabase's log and
- * backup retention on the Free and Pro plans (1–7 days each).
+ * and checked against App Store Review Guideline 5.1.1, GDPR Articles 12–22
+ * and Korea's PIPA (Articles 28-8 and 30). Facts about the service come from
+ * the project itself: the database region, what the migrations keep and for
+ * how long, Supabase's log and backup retention on the Free and Pro plans
+ * (1–7 days each), and Supabase's data processing addendum.
  *
  * Nothing in this file may import anything: the export script runs it
  * directly under Node.
  */
 
 /**
- * Only the publisher can fill these in. `npm run preflight` fails while any
- * value still starts with "[".
+ * Who publishes the app. `npm run preflight` fails while any value still
+ * starts with "[".
  */
 export const OPERATOR = {
-  /** the person or company legally responsible for the app */
-  name: '[OPERATOR NAME]',
+  /** the person legally responsible for the app */
+  name: 'Baris Turker',
   /** receives privacy requests, reports and support email */
-  email: '[CONTACT EMAIL]',
-  /** where the operator is based; its law governs the terms */
-  country: '[COUNTRY]',
-  /** the youngest age allowed to use the app, e.g. 16 */
-  minimumAge: '[MINIMUM AGE]',
-  /** the company that delivers sign-up and password reset emails */
+  email: 'baristurkerlol@gmail.com',
+  /**
+   * Where the operator lives. Its law governs the terms, and it makes Korea's
+   * Personal Information Protection Act (PIPA) the privacy law that applies
+   * first, which is why the policy has PIPA's sections.
+   */
+  country: 'South Korea',
+  /**
+   * The lowest age that needs no parental consent flow: PIPA requires a
+   * parent's consent below 14 (Article 22-2), and the US COPPA below 13.
+   */
+  minimumAge: '14',
+  /**
+   * The company that delivers sign-up and password reset emails, with its
+   * country, e.g. "Resend, Inc. (United States)". PIPA requires naming both.
+   */
   emailProvider: '[EMAIL PROVIDER]',
 };
 
-export const EFFECTIVE_DATE = '15 September 2026';
+export const EFFECTIVE_DATE = '17 September 2026';
 
 export const ATTRIBUTION =
   'Adapted from the Basecamp open-source policies (github.com/basecamp/policies), ' +
@@ -99,7 +110,7 @@ export const PRIVACY_POLICY: LegalDocument = {
           'Technical information.',
         ),
         p(
-          'No analytics, no advertising identifiers, no location, and no contacts. The app contains no advertising or tracking code.',
+          'No analytics, no advertising identifiers, no location, and no contacts. The app contains no cookies, advertising or tracking code.',
           'What we don’t collect.',
         ),
       ],
@@ -132,7 +143,7 @@ export const PRIVACY_POLICY: LegalDocument = {
           'Our service providers.',
         ),
         list(
-          'Supabase, Inc., for our database, sign-in, photo storage and server functions.',
+          'Supabase Pte. Ltd. (Singapore), for our database, sign-in, photo storage and server functions.',
           `${emailProvider}, for delivering account emails.`,
         ),
         p(
@@ -146,10 +157,22 @@ export const PRIVACY_POLICY: LegalDocument = {
       ],
     },
     {
-      heading: 'Where your information is stored',
+      heading: 'Where your information goes',
       blocks: [
         p(
-          'Your information is stored in Japan, in Supabase’s Tokyo data center, so if you use powercouple from another country, it is transferred there. The European Commission and the United Kingdom recognize Japan as protecting personal data adequately. Where a provider handles information from another country, for example to give support, it does so under safeguards such as the European Commission’s Standard Contractual Clauses.',
+          `Your information is stored in Japan, in our hosting provider’s Tokyo data center. We are based in ${country}, so for you this is a transfer abroad unless you live in Japan. The details:`,
+        ),
+        list(
+          'What: everything described under “What we collect and why”.',
+          'To whom: Supabase Pte. Ltd., Singapore (privacy@supabase.com). It stores the information in Japan, and may reach it from Singapore and the United States to run and support the service.',
+          `Also: ${emailProvider} receives your email address, to deliver account emails.`,
+          'When and how: whenever you use the app, over encrypted connections.',
+          'Why: to host powercouple’s database, sign-in, photos and emails.',
+          'For how long: as described under “How long we keep it”.',
+          'Saying no: the app can’t work without these transfers. If you don’t want them, don’t create an account, or delete yours in account settings.',
+        ),
+        p(
+          'The European Commission and the United Kingdom recognize Japan as protecting personal data adequately, and Supabase’s access from other countries is covered by the European Commission’s Standard Contractual Clauses.',
         ),
       ],
     },
@@ -165,6 +188,9 @@ export const PRIVACY_POLICY: LegalDocument = {
           `Email delivery records: as long as ${emailProvider} keeps them under its own policy.`,
         ),
         p('We keep information longer only when the law requires it, or to deal with a legal claim.'),
+        p(
+          'Information due for deletion is erased from our systems so that it can’t be recovered. We keep no paper records.',
+        ),
       ],
     },
     {
@@ -206,6 +232,11 @@ export const PRIVACY_POLICY: LegalDocument = {
         p(
           `To make a request, email ${email}. We will confirm the request comes from you, reply within one month, and never treat you differently for using your rights. We don’t sell or share personal information as California law defines those words, and we don’t make decisions about you by automated means.`,
         ),
+        p('In Korea, you can also get help from these public bodies:'),
+        list(
+          'Personal Information Dispute Mediation Committee: www.kopico.go.kr, 1833-6972',
+          'Personal Information Infringement Report Center (KISA): privacy.kisa.or.kr, 118',
+        ),
       ],
     },
     {
@@ -221,6 +252,14 @@ export const PRIVACY_POLICY: LegalDocument = {
       blocks: [
         p(
           `powercouple is not for anyone under ${minimumAge}. We don’t knowingly collect information from anyone younger. If you believe someone under ${minimumAge} has an account, email ${email} and we will delete it.`,
+        ),
+      ],
+    },
+    {
+      heading: 'Who is responsible for your privacy',
+      blocks: [
+        p(
+          `${name} is responsible for protecting your personal information and for handling questions and complaints about it. Email ${email}.`,
         ),
       ],
     },
