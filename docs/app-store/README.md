@@ -39,16 +39,11 @@ have it.
 
 ### 3. The app's name
 
-Decided: `powercouple`. On 21 September 2026 no app in the US or Korean App
-Store had exactly that name, but four come close: "Power Couple!", "Power
-Couple - Shared Finances", "power couple: grow together" and "PowerCouple
-(83edc5)". The store's search cannot show a name someone has reserved but not
-released, and that last one's odd suffix may mean the plain name was refused,
-so the only exact check is creating the app record in step 7.
-
-If Apple refuses `powercouple`, use `powercouple: goals for two` (26 of the 30
-characters allowed). The home-screen name stays `powercouple` either way, and
-so do the policies, the emails and the bundle ID. Only the listing changes.
+Done: the App Store name is `powercouple: goals for two`, because Apple
+refused plain `powercouple` as already in use. The name under the icon stays
+`powercouple`, and so do the policies, the emails and the bundle ID;
+[listing.md](listing.md) has the store name and a subtitle that doesn't repeat
+"goals".
 
 ### 4. Email service
 
@@ -71,7 +66,7 @@ reset code.
    key with "Sending access" and copy it, because it is shown only once.
 3. **Supabase** (project `imhpwatxupusiiujwvdr`) → Authentication → Emails →
    SMTP Settings. Turn on custom SMTP: sender `noreply@mail.<your domain>`
-   (nothing can receive replies there), sender name = the app's name, host
+   (nothing can receive replies there), sender name `powercouple`, host
    `smtp.resend.com`, port `465`, username `resend`, password = the API key.
 
 Then tell Claude, who will:
@@ -114,25 +109,9 @@ at `https://<your domain>/privacy`, you add the DNS records Claude gives you.
 
 ### 7. App Store Connect: create the app
 
-Do this before buying the domain: it reserves the name. Apple does not
-publish how long it holds a name with no build uploaded, so upload the first
-build within a few months.
-
-1. Register the bundle ID: developer.apple.com → Certificates, Identifiers &
-   Profiles → Identifiers → + → App IDs → App. Description `powercouple`,
-   explicit Bundle ID `com.baris.powercouple`, no extra capabilities. The app
-   needs none; it has no push notifications and no Sign in with Apple.
-2. App Store Connect → Apps → + → New App:
-   - Platforms: iOS
-   - Name: `powercouple`, or `powercouple: goals for two` if Apple says the
-     name is already in use
-   - Primary language: English (U.S.)
-   - Bundle ID: `com.baris.powercouple`
-   - SKU: `powercouple`. Only you see it; it only has to be unique in your
-     account.
-   - User access: Full Access
-
-Tell Claude which name Apple accepted.
+Done on 21 September 2026: the record exists as `powercouple: goals for two`,
+with bundle ID `com.baris.powercouple`. Apple does not publish how long it holds a name with no build uploaded, so
+upload the first build (step 8) within a few months.
 
 ### 8. First build
 

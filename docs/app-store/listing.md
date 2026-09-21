@@ -6,15 +6,17 @@ as built; keep it that way when editing.
 
 | Field | Limit | Draft |
 | --- | --- | --- |
-| Name | 30 | `powercouple` |
-| Subtitle | 30 | `Daily goals, done together` |
+| Name | 30 | `powercouple: goals for two` |
+| Subtitle | 30 | `Daily habits, done together` |
 | Primary category | | Lifestyle |
 | Secondary category | | Productivity |
 | Copyright | | `2026 Baris Turker` |
 | Price | | Free, no in-app purchases |
 
-The name must be unique on the App Store. If `powercouple` is taken, try
-`powercouple: goals for two`.
+The name is what the App Store Connect record was created with on 21
+September 2026; Apple refused plain `powercouple` as already in use. The name
+under the icon on the home screen stays `powercouple` (`app.json`). Many apps
+do the same: a longer name in the store, a short one under the icon.
 
 ## Promotional text (170)
 
@@ -36,7 +38,7 @@ No ads, no tracking, no in-app purchases.
 
 ## Keywords (100 bytes)
 
-`couple,goals,habit,tracker,streak,partner,relationship,accountability,motivation,photo`
+`couple,tracker,streak,partner,relationship,accountability,motivation,photo,proof,routine`
 
 Apple already searches the name and subtitle, so the keywords don't repeat
 them.
