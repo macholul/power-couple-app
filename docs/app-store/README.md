@@ -13,17 +13,15 @@ on 21 September 2026. They change, so check one before you rely on it.
 
 ### 1. Expo account and EAS project
 
-Create a free account at expo.dev, then log in. The browser opens to finish
-signing in:
+Done: the project is `@baristurker/power-couple-app`, linked by `owner` and
+`extra.eas.projectId` in `app.json`. It belongs to the personal account, which
+is what Expo recommends for solo developers. To move it to another Expo
+account, transfer it in the project's settings on expo.dev (Expo allows this a
+limited number of times) and change `owner` in `app.json` to match.
 
-```bash
-npx eas-cli@latest login
-```
-
-Claude then runs `eas init`, which links this project to your account and
-writes its id into `app.json`, and commits the change. After that, give builds
-the two Supabase values. They live in `.env` locally and are never uploaded
-otherwise:
+Still open: give builds the two Supabase values. They live in `.env` locally
+and are never uploaded otherwise. Run this from the project folder while logged
+in to Expo (`npx eas-cli@latest login`):
 
 ```bash
 npx eas-cli@latest env:push --environment production --environment preview --path .env --force

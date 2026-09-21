@@ -143,6 +143,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e7b7e99b-aded-4704-a9fa-51a10b850eca"
+      }
+    },
+    "owner": "baristurker"
   }
 }
