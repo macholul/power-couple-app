@@ -6,9 +6,11 @@ Reviewers need a couple that is already paired, because nothing in the app
 works until two accounts are joined. On a device or simulator running the
 release build:
 
-1. Sign up as **woman**, e.g. `review.her@<your domain>`. Confirm the email
-   with the code.
-2. Sign up as **man**, e.g. `review.him@<your domain>`, on a second device or
+1. Sign up as **woman**, e.g. `<you>+review-her@gmail.com`. Gmail delivers any
+   `+` address to your own inbox, so the confirmation code reaches you. An
+   address at your own domain has no inbox until you set one up. Confirm the
+   email with the code.
+2. Sign up as **man**, e.g. `<you>+review-him@gmail.com`, on a second device or
    after logging out.
 3. On the first account, copy the invite code; on the second, enter it.
 4. Give each a goal or two, submit a proof photo from one, and confirm it
