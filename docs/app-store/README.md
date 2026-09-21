@@ -13,23 +13,22 @@ on 21 September 2026. They change, so check one before you rely on it.
 
 ### 1. Expo account and EAS project
 
-Done: the project is `@baristurker/power-couple-app`, linked by `owner` and
+Done. The project is `@baristurker/power-couple-app`, linked by `owner` and
 `extra.eas.projectId` in `app.json`. It belongs to the personal account, which
 is what Expo recommends for solo developers. To move it to another Expo
 account, transfer it in the project's settings on expo.dev (Expo allows this a
 limited number of times) and change `owner` in `app.json` to match.
 
-Still open: give builds the two Supabase values. They live in `.env` locally
-and are never uploaded otherwise. Run this from the project folder while logged
-in to Expo (`npx eas-cli@latest login`):
+EAS's production and preview environments hold the two Supabase values from
+`.env`; on 21 September 2026 both matched the file. EAS stores them as plain
+text because they start with `EXPO_PUBLIC_`. That is right: both values end up
+inside the app, so neither is a secret. If either changes, update `.env` and
+upload it again from the project folder while logged in to Expo
+(`npx eas-cli@latest login`):
 
 ```bash
 npx eas-cli@latest env:push --environment production --environment preview --path .env --force
 ```
-
-The variables start with `EXPO_PUBLIC_`, so EAS stores them as plain text.
-That is right: both values end up inside the app, so neither is a secret. The
-file holds only those two.
 
 ### 2. Apple Developer Program
 
