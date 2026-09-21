@@ -32,28 +32,23 @@ npx eas-cli@latest env:push --environment production --environment preview --pat
 
 ### 2. Apple Developer Program
 
-Start this early: Apple does not publish how long approval takes, and
-everything from step 7 on waits for it. Enroll as an individual at
-developer.apple.com/programs/enroll, $99 a year. You need an Apple Account with
-two-factor authentication, your legal name, a phone number and a street
-address (no P.O. box). Your legal name is what the App Store shows as the
-seller.
+Done: you are enrolled as an individual, so the App Store shows your legal
+name as the seller. The membership renews at $99 a year. If it lapses, the app
+is removed from the App Store, though it keeps working for people who already
+have it.
 
-### 3. Choose the app's name
+### 3. The app's name
 
-The domain, the email sender, the listing and the policies all carry it, so
-settle it before you buy anything. On 21 September 2026 the App Store already
-had several apps called "Power Couple" or close to it. Three launched in the
-past month, and one of them, "power couple: grow together" (Lifestyle), also
-helps couples make time for their goals. The store's search cannot show a name
-someone has reserved but not released, so the only exact check is creating
-the app record in step 7.
+Decided: `powercouple`. On 21 September 2026 no app in the US or Korean App
+Store had exactly that name, but four come close: "Power Couple!", "Power
+Couple - Shared Finances", "power couple: grow together" and "PowerCouple
+(83edc5)". The store's search cannot show a name someone has reserved but not
+released, and that last one's odd suffix may mean the plain name was refused,
+so the only exact check is creating the app record in step 7.
 
-Either keep `powercouple` and let the store name carry a suffix (for example
-`powercouple: goals for two`), or pick a more distinctive name. The bundle ID
-`com.baris.powercouple` can stay whatever you choose: users never see it, and
-it is permanent once registered. Tell Claude the name. Renaming touches
-`app.json`, the policies, the listing and the email templates.
+If Apple refuses `powercouple`, use `powercouple: goals for two` (26 of the 30
+characters allowed). The home-screen name stays `powercouple` either way, and
+so do the policies, the emails and the bundle ID. Only the listing changes.
 
 ### 4. Email service
 
@@ -61,11 +56,12 @@ Until custom email is set up, Supabase only emails members of your Supabase
 team, at 2 emails an hour, so real users would never receive a sign-up or
 reset code.
 
-1. **Domain.** Buy one for the name from step 3, roughly $10 to $15 a year for
-   a `.com`, with WHOIS privacy on so your address stays out of public
-   records. Cloudflare Registrar sells at cost and includes it; Porkbun and
-   Namecheap are fine too. If you keep the name, `trypowercouple.com` was
-   unregistered on 21 September 2026.
+1. **Domain.** `powercouple.com` and `powercouple.app` are taken. On 21
+   September 2026 `trypowercouple.com`, `usepowercouple.com` and
+   `joinpowercouple.com` were free; `trypowercouple.com` reads best. It costs
+   roughly $10 to $15 a year. Turn WHOIS privacy on so your address stays out
+   of public records. Cloudflare Registrar sells at cost and includes privacy;
+   Porkbun and Namecheap are fine too.
 2. **Resend** (resend.com). The free plan allows 3,000 emails a month and 100
    a day, on up to 3 domains. Add the subdomain `mail.<your domain>`, not the
    bare domain: Resend recommends it so email trouble cannot hurt your main
@@ -118,13 +114,25 @@ at `https://<your domain>/privacy`, you add the DNS records Claude gives you.
 
 ### 7. App Store Connect: create the app
 
-When Apple approves your enrollment: App Store Connect → Apps → + → New App.
-Choose iOS, your name from step 3, a primary language and the bundle ID
-`com.baris.powercouple`. If that bundle ID is missing from the list, register
-it first at developer.apple.com → Certificates, Identifiers & Profiles →
-Identifiers → + → App IDs → App, with an explicit Bundle ID and no extra
-capabilities. If Apple refuses the name, you find out here: pick another and
-tell Claude.
+Do this before buying the domain: it reserves the name. Apple does not
+publish how long it holds a name with no build uploaded, so upload the first
+build within a few months.
+
+1. Register the bundle ID: developer.apple.com → Certificates, Identifiers &
+   Profiles → Identifiers → + → App IDs → App. Description `powercouple`,
+   explicit Bundle ID `com.baris.powercouple`, no extra capabilities. The app
+   needs none; it has no push notifications and no Sign in with Apple.
+2. App Store Connect → Apps → + → New App:
+   - Platforms: iOS
+   - Name: `powercouple`, or `powercouple: goals for two` if Apple says the
+     name is already in use
+   - Primary language: English (U.S.)
+   - Bundle ID: `com.baris.powercouple`
+   - SKU: `powercouple`. Only you see it; it only has to be unique in your
+     account.
+   - User access: Full Access
+
+Tell Claude which name Apple accepted.
 
 ### 8. First build
 
