@@ -51,40 +51,57 @@ Until custom email is set up, Supabase only emails members of your Supabase
 team, at 2 emails an hour, so real users would never receive a sign-up or
 reset code.
 
-1. **Domain.** `powercouple.com` and `powercouple.app` are taken. On 21
-   September 2026 `trypowercouple.com`, `usepowercouple.com` and
-   `joinpowercouple.com` were free; `trypowercouple.com` reads best. It costs
-   roughly $10 to $15 a year. Turn WHOIS privacy on so your address stays out
-   of public records. Cloudflare Registrar sells at cost and includes privacy;
-   Porkbun and Namecheap are fine too.
-2. **Resend** (resend.com). The free plan allows 3,000 emails a month and 100
-   a day, on up to 3 domains. Add the subdomain `mail.<your domain>`, not the
-   bare domain: Resend recommends it so email trouble cannot hurt your main
-   domain's reputation. Keep the default region (North Virginia): the privacy
-   policy will say the mail goes through the United States. Add the DNS
-   records Resend shows at your registrar and press Verify. Then create an API
-   key with "Sending access" and copy it, because it is shown only once.
-3. **Supabase** (project `imhpwatxupusiiujwvdr`) → Authentication → Emails →
-   SMTP Settings. Turn on custom SMTP: sender `noreply@mail.<your domain>`
-   (nothing can receive replies there), sender name `powercouple`, host
-   `smtp.resend.com`, port `465`, username `resend`, password = the API key.
+For now the app sends through Gmail: free, and no domain needed. The costs
+are that every email comes from a Gmail address, and that Gmail allows a
+personal account about 500 emails a day and blocks sending for 1 to 24 hours
+past that. If the app grows, move to your own domain (below).
+
+1. **A Gmail account just for the app.** Better than your personal one: the
+   app's mail, and Gmail's copy of everything it sends, stay out of your own
+   inbox, and if Gmail ever blocks it for sending too much, your own email
+   keeps working. Turn on 2-Step Verification, which app passwords require.
+2. **App password.** Signed in as the app's account, open
+   myaccount.google.com/apppasswords and create one named `powercouple`. Copy
+   the 16 characters without the spaces. Changing that account's password
+   revokes it, and the app's emails stop until you create a new one and enter
+   it in Supabase.
+3. **Supabase** → [SMTP settings](https://supabase.com/dashboard/project/imhpwatxupusiiujwvdr/auth/smtp).
+   Turn on custom SMTP:
+   - Sender email and username: the app's Gmail address. Gmail only sends as
+     the account that signed in.
+   - Sender name: `powercouple`
+   - Host `smtp.gmail.com`, port `465`
+   - Password: the app password
 
 Then tell Claude, who will:
 
-- set `OPERATOR.emailProvider` in `src/content/legal.ts` to the provider and
-  its country, e.g. `Resend, Inc. (United States)`, and run
-  `npm run legal:export`. Korea's privacy law asks the policy to name each
-  provider and where it is;
-- run `npx supabase config diff`, then `config push`, for the two email
-  templates in `supabase/templates/`. Supabase refuses template changes until
-  custom SMTP is on, and the app asks for the code in the email, not a link;
-- set `enable_confirmations = true` under `[auth.email]` in
-  `supabase/config.toml` and push. Doing this before the mail works would
-  leave new users waiting for a code that never arrives. It applies to
-  everyone who signs up to this Supabase project, including the old web app.
+- set `OPERATOR.emailProvider` in `src/content/legal.ts` to
+  `Google LLC (United States)`, add to the privacy policy how long the copies
+  in the Gmail account's Sent folder are kept, and run `npm run legal:export`.
+  Korea's privacy law asks the policy to name each provider, where it is, and
+  how long data is kept;
+- set `email_sent` under `[auth.rate_limit]` in `supabase/config.toml` to 20
+  an hour, which keeps a whole day under Gmail's limit. The file still says 2,
+  Supabase's limit before custom SMTP, so pushing it unchanged would throttle
+  the app to 2 emails an hour;
+- run `npx supabase config diff`, then `config push`, for that limit and the
+  two email templates in `supabase/templates/`. Supabase refuses template
+  changes until custom SMTP is on, and the app asks for the code in the email,
+  not a link;
+- set `enable_confirmations = true` under `[auth.email]` and push. Doing this
+  before the mail works would leave new users waiting for a code that never
+  arrives. It applies to everyone who signs up to this Supabase project,
+  including the old web app.
 
-Finally, test it yourself: ask the app for a password-reset code and check
-that the email arrives.
+Finally, test it yourself: ask the app for a password-reset code for your own
+address and check that the email arrives.
+
+**Later, your own domain.** If Gmail's limit starts to pinch, buy a domain
+(`trypowercouple.com` was free on 21 September 2026; `powercouple.com` and
+`powercouple.app` are taken), verify `mail.<domain>` in Resend (free for 3,000
+emails a month), and replace the SMTP settings: host `smtp.resend.com`, port
+`465`, username `resend`, password a Resend API key, sender
+`noreply@mail.<domain>`. Claude then updates the policy and the rate limit.
 
 ### 5. Read both policies once
 
@@ -104,8 +121,8 @@ update it.
 App Store Connect needs public URLs for the privacy policy and for support, and
 the support page has to show a way to contact you. Tell Claude to go ahead,
 and it builds the pages from `src/content/legal.ts` and publishes them with
-GitHub Pages, which is free because this repository is public. To serve them
-at `https://<your domain>/privacy`, you add the DNS records Claude gives you.
+GitHub Pages, which is free because this repository is public. They live
+under `https://macholul.github.io/power-couple-app/` until you add a domain.
 
 ### 7. App Store Connect: create the app
 
