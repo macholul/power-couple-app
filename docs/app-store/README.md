@@ -68,24 +68,10 @@ Done on 21 and 22 September 2026:
 - The privacy policy names Google as the email provider, and says that copies
   of account emails stay in the Gmail account for up to 60 days.
 - A test password-reset email arrived, and email confirmation is on: new
-  accounts enter the code from the email before they can sign in. This
-  applies to the old web app's sign-ups too.
-
-Still to do:
-
-1. **Rate limit** (you). In
-   [Rate Limits](https://supabase.com/dashboard/project/imhpwatxupusiiujwvdr/auth/rate-limits),
-   set the limit for sending emails to 20 an hour, which keeps a whole day
-   under Gmail's limit. `config push` doesn't manage this value, so
-   `supabase/config.toml` only records it.
-2. **Cleanup** (you). Gmail keeps a copy of every email it sends, and those
-   contain users' addresses. [gmail-cleanup.gs](gmail-cleanup.gs) trashes
-   everything older than 29 days, every day, which keeps the policy's 60-day
-   promise. Signed in as `trypowercouple@gmail.com`, open script.google.com
-   and make a new project, paste the file over the code there, and save.
-   Choose `setUp` in the function menu and press Run. Google warns that it
-   hasn't verified the app, as it does for any script you write yourself:
-   choose Advanced, go to the project, and allow access.
+  accounts enter the code from the email before they can sign in. Both
+  demo accounts were made that way, so sign-up works end to end.
+- The email rate limit is 20 an hour, and `gmail-cleanup.gs` runs daily in
+  `trypowercouple@gmail.com`.
 
 **Later, your own domain.** If Gmail's limit starts to pinch, buy a domain
 (`trypowercouple.com` was free on 21 September 2026; `powercouple.com` and
@@ -146,8 +132,11 @@ Apple processes it, usually 10 to 15 minutes. Install the TestFlight app on
 your iPhone, sign in with the same Apple Account and install the build.
 
 The simulator has no camera, so proof photos can only be tested on a real
-phone. Create the two paired demo accounts here and run every flow with them
-([review-notes.md](review-notes.md)) before Apple does.
+phone. Run every flow there with the demo accounts
+([review-notes.md](review-notes.md)) before Apple does. They exist since 22
+September 2026: a woman and a man, paired, on `+` addresses of your own
+Gmail. Their passwords go only into App Store Connect, never into this
+repository.
 
 ### 10. Screenshots
 
