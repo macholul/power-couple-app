@@ -70,16 +70,12 @@ Done on 21 and 22 September 2026:
 
 Still to do:
 
-1. **Fix the address** (you). The SMTP settings say `powercouple@gmail.com`,
-   an account that belongs to someone else, for both the sender email and
-   the username, so Gmail refuses to sign in and no email goes out. Change
-   both to `trypowercouple@gmail.com` and enter the app password again.
-2. **Rate limit** (you). In
+1. **Rate limit** (you). In
    [Rate Limits](https://supabase.com/dashboard/project/imhpwatxupusiiujwvdr/auth/rate-limits),
    set the limit for sending emails to 20 an hour, which keeps a whole day
    under Gmail's limit. `config push` doesn't manage this value, so
    `supabase/config.toml` only records it.
-3. **Cleanup** (you). Gmail keeps a copy of every email it sends, and those
+2. **Cleanup** (you). Gmail keeps a copy of every email it sends, and those
    contain users' addresses. [gmail-cleanup.gs](gmail-cleanup.gs) trashes
    everything older than 29 days, every day, which keeps the policy's 60-day
    promise. Signed in as `trypowercouple@gmail.com`, open script.google.com
@@ -87,10 +83,10 @@ Still to do:
    Choose `setUp` in the function menu and press Run. Google warns that it
    hasn't verified the app, as it does for any script you write yourself:
    choose Advanced, go to the project, and allow access.
-4. **Test** (you). Ask the app for a password-reset code for your own address,
+3. **Test** (you). Ask the app for a password-reset code for your own address,
    and check that the email arrives from `trypowercouple@gmail.com` with an
    8-digit code.
-5. **Email confirmation** (Claude, once the test email has arrived). Set
+4. **Email confirmation** (Claude, once the test email has arrived). Set
    `enable_confirmations = true` under `[auth.email]` in
    `supabase/config.toml` and push. Doing this before the mail works would
    leave new users waiting for a code that never arrives. It applies to
