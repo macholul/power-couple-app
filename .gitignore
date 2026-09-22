@@ -43,3 +43,6 @@ example
 # generated native folders
 /ios
 /android
+
+# public pages, built by npm run site and published by GitHub Actions
+/site

@@ -53,7 +53,8 @@
     "db:snapshot": "node supabase/tests/snapshot.ts",
     "db:verify": "node supabase/tests/verify.ts",
     "legal:export": "node scripts/export-legal.ts",
-    "preflight": "npm run typecheck && npm run lint && npm run db:test && node scripts/preflight.ts"
+    "preflight": "npm run typecheck && npm run lint && npm run db:test && node scripts/preflight.ts",
+    "site": "node scripts/build-site.ts"
   },
   "private": true
 }
