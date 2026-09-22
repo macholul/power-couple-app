@@ -12,6 +12,8 @@ as built; keep it that way when editing.
 | Secondary category | | Productivity |
 | Copyright | | `2026 Baris Turker` |
 | Price | | Free, no in-app purchases |
+| Privacy Policy URL | | https://macholul.github.io/power-couple-app/privacy/ |
+| Support URL | | https://macholul.github.io/power-couple-app/ |
 
 The name is what the App Store Connect record was created with on 21
 September 2026; Apple refused plain `powercouple` as already in use. The name

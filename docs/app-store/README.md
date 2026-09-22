@@ -82,10 +82,11 @@ emails a month), and replace the SMTP settings: host `smtp.resend.com`, port
 
 ### 5. Read both policies once
 
-They are compiled into the app (account settings), and `docs/legal/*.md` has
-the same text. Read them in full before they go public and before the first
-build. If anything is no longer true, change `src/content/legal.ts`, not the
-Markdown, then run `npm run legal:export`.
+They are compiled into the app (account settings), published on the website
+(step 6), and `docs/legal/*.md` has the same text. Read them in full before
+the first build, since each build carries the text it was made with. If
+anything is no longer true, change `src/content/legal.ts`, not the Markdown,
+run `npm run legal:export`, and push: the website updates itself.
 
 `OPERATOR` already names Baris Turker in South Korea, with a minimum age of 14
 (Korea's privacy law needs a parent's consent below 14, and the US's below
@@ -95,11 +96,19 @@ update it.
 
 ### 6. Host the policies and a support page
 
-App Store Connect needs public URLs for the privacy policy and for support, and
-the support page has to show a way to contact you. Tell Claude to go ahead,
-and it builds the pages from `src/content/legal.ts` and publishes them with
-GitHub Pages, which is free because this repository is public. They live
-under `https://macholul.github.io/power-couple-app/` until you add a domain.
+Done on 22 September 2026. GitHub Pages publishes three pages, built from
+`src/content/legal.ts` by `npm run site`:
+
+- support: https://macholul.github.io/power-couple-app/
+- privacy policy: https://macholul.github.io/power-couple-app/privacy/
+- terms of service: https://macholul.github.io/power-couple-app/terms/
+
+`.github/workflows/pages.yml` republishes them whenever the policies or the
+page builder change on `main`, so editing `legal.ts` and pushing is all an
+update takes. The support page's answers quote the app's labels and limits
+(`scripts/site-pages.ts`); change them there when the app changes. With a
+domain later, point it at the same pages under Settings → Pages → Custom
+domain.
 
 ### 7. App Store Connect: create the app
 
@@ -212,6 +221,22 @@ npx supabase functions deploy account-exists --use-api
 ```
 
 ## Know before launch
+
+### The app icon shows another company's logo
+
+The boy's cap in the app icon carries the MLB logo. App Review rejects apps
+that use someone else's trademark without permission (guideline 5.2.1), and
+icons get a close look. Replace the icon, and any character image in the app
+that shows the logo, before you submit.
+
+### The old web app is paused
+
+It was paused on Vercel on 22 September 2026: its sign-up couldn't take the
+emailed code, and the app is iPhone-only. Accounts made there sign in to the
+iPhone app as they are. Delete the Vercel project once you are sure you won't
+need it; it only ever held the public URL and anon key, so no key needs
+rotating.
+
 
 ### The couples rule
 
