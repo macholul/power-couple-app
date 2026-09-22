@@ -145,7 +145,10 @@ export default function LoginScreen() {
         if (result.error) return fail(result.error);
         setCode('');
         setPassword('');
-        goTo('reset', `if ${address} has an account, we emailed it a code`);
+        goTo(
+          'reset',
+          result.known ? `we emailed a code to ${address}` : `if ${address} has an account, we emailed it a code`,
+        );
         return;
       }
       case 'reset': {

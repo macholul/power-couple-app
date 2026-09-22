@@ -91,7 +91,7 @@ export const PRIVACY_POLICY: LegalDocument = {
       heading: 'What we collect and why',
       blocks: [
         p(
-          'Your email address and password. We use them to create your account, sign you in, keep your account secure, and send account emails such as sign-up and password reset codes. Your password is stored only in hashed form, which nobody can read, including us.',
+          'Your email address and password. We use them to create your account, sign you in, keep your account secure, and send account emails such as sign-up and password reset codes. Your password is stored only in hashed form, which nobody can read, including us. When you ask to reset your password, we first check whether an account uses the email you typed, so the app can tell you if none does; the check keeps no record of the email.',
           'Account.',
         ),
         p(

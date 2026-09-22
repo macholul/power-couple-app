@@ -76,6 +76,9 @@ export async function signUp({
     // the signup trigger builds the profile from exactly these
     options: { data: { display_name: trimmed, gender, avatar_character: character } },
   });
+  if (error?.code === 'user_already_exists' || error?.code === 'email_exists') {
+    return { error: "there's already an account with that email. log in instead" };
+  }
   if (error) return { error: describe(error) };
 
   // With email confirmation on there is no session until the code is entered,
@@ -106,12 +109,33 @@ export async function resendSignUpCode(email: string): Promise<AuthActionState> 
   return { error: null };
 }
 
-/** Emails a reset code. Succeeds for unknown addresses too, by design. */
-export async function sendPasswordReset(email: string): Promise<AuthActionState> {
+/**
+ * Whether an account uses the email, from the account-exists Edge Function.
+ * Null when it can't say: past its cap, or when the call itself failed.
+ */
+async function accountExists(email: string): Promise<boolean | null> {
+  const { data, error } = await supabase.functions.invoke<{ exists: boolean | null }>('account-exists', {
+    body: { email },
+  });
+  if (error || !data) return null;
+  return data.exists;
+}
+
+/**
+ * Emails a reset code, first checking that an account uses the address, so
+ * the screen can say when none does (sign-up reveals that anyway; see
+ * migration 20260922000000). When the check can't answer, the code is
+ * requested all the same and `known` is null.
+ */
+export async function sendPasswordReset(
+  email: string,
+): Promise<AuthActionState & { known?: boolean | null }> {
   if (!email) return { error: 'enter your email' };
+  const known = await accountExists(email);
+  if (known === false) return { error: "there's no account with that email" };
   const { error } = await supabase.auth.resetPasswordForEmail(email);
   if (error) return { error: describe(error) };
-  return { error: null };
+  return { error: null, known };
 }
 
 /**

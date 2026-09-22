@@ -10,7 +10,7 @@ This policy explains what we collect, why, who can see it, how long we keep it, 
 
 ## What we collect and why
 
-**Account.** Your email address and password. We use them to create your account, sign you in, keep your account secure, and send account emails such as sign-up and password reset codes. Your password is stored only in hashed form, which nobody can read, including us.
+**Account.** Your email address and password. We use them to create your account, sign you in, keep your account secure, and send account emails such as sign-up and password reset codes. Your password is stored only in hashed form, which nobody can read, including us. When you ask to reset your password, we first check whether an account uses the email you typed, so the app can tell you if none does; the check keeps no record of the email.
 
 **Profile.** The name you choose, whether you are a woman or a man, your character, and your phone’s time zone. Your name and character are how you and your partner appear to each other. Gender decides who can pair: a powercouple couple is one woman and one man. Your time zone makes each day start and end on your own calendar, so streaks are counted fairly.
 
