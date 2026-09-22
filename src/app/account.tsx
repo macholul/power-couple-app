@@ -3,7 +3,6 @@ import { Alert, Linking, ScrollView, StyleSheet, Text, TextInput, View } from 'r
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AvatarFace } from '@/components/avatar-face';
 import { BackChip } from '@/components/back-chip';
 import { Gate } from '@/components/gate';
 import { GenderChoice } from '@/components/gender-choice';
@@ -16,9 +15,7 @@ import {
   MIN_PASSWORD_LENGTH,
   signOut,
 } from '@/lib/actions/auth';
-import { characterFor } from '@/lib/characters';
 import { genderOf } from '@/lib/people';
-import { sideTheme } from '@/lib/theme';
 import type { Gender, Profile } from '@/lib/types/database';
 import { useRefreshViewer, useViewer } from '@/lib/viewer';
 import { FONT, NEUTRAL } from '@/constants/theme';
@@ -100,14 +97,11 @@ function StatusLine({ status }: { status: Status }) {
 }
 
 function YouCard({ userId, profile, paired }: { userId: string; profile: Profile; paired: boolean }) {
-  const router = useRouter();
   const refreshViewer = useRefreshViewer();
   const [name, setName] = useState(profile.display_name ?? '');
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<Status>({ error: null });
   const gender = genderOf(profile);
-  const character = characterFor(profile.avatar_character, gender);
-  const theme = sideTheme(gender, character.key);
 
   const trimmed = name.trim();
   const changed = trimmed.length > 0 && trimmed !== (profile.display_name ?? '');
@@ -164,19 +158,6 @@ function YouCard({ userId, profile, paired }: { userId: string; profile: Profile
       {paired && (
         <Text style={styles.hint}>you can change this while you&apos;re not in a couple</Text>
       )}
-
-      <Text style={styles.label}>character</Text>
-      <Press
-        onPress={() => router.push('/character')}
-        feel="soft"
-        accessibilityLabel={`Character: ${character.name}`}
-        accessibilityHint="Opens the characters to choose from"
-        style={styles.characterRow}
-      >
-        <AvatarFace src={theme.faceImg} background={theme.chip} />
-        <Text style={[styles.rowLabel, styles.grow]}>{character.name}</Text>
-        <View style={styles.rowChevron} />
-      </Press>
       <StatusLine status={status} />
     </Card>
   );
@@ -401,18 +382,6 @@ const styles = StyleSheet.create({
   },
   rowDivider: { borderBottomWidth: 1.5, borderBottomColor: NEUTRAL.toggleTrack },
   rowLabel: { fontFamily: FONT.medium, fontSize: 15, color: NEUTRAL.ink },
-  grow: { flex: 1 },
-  characterRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    borderWidth: 2,
-    borderColor: NEUTRAL.cardBorder,
-    borderRadius: 16,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    backgroundColor: NEUTRAL.inputBg,
-  },
   rowChevron: {
     width: 8,
     height: 8,

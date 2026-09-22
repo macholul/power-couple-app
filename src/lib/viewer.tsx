@@ -12,8 +12,7 @@ import type { User } from '@supabase/supabase-js';
 
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
-import { characterFor } from '@/lib/characters';
-import { genderOf } from '@/lib/people';
+import { characterFor, genderOf } from '@/lib/people';
 import type { Couple, Profile } from '@/lib/types/database';
 
 export interface Viewer {
@@ -110,12 +109,7 @@ async function healProfile(user: User): Promise<Profile | null> {
   const { error } = await supabase
     .from('profiles')
     .upsert(
-      {
-        id: user.id,
-        display_name: name || 'me',
-        gender,
-        avatar_character: characterFor(meta.avatar_character, gender).key,
-      },
+      { id: user.id, display_name: name || 'me', gender, avatar_character: characterFor(gender) },
       { onConflict: 'id', ignoreDuplicates: true },
     );
   if (error) return null;

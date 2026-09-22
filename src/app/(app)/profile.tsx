@@ -13,7 +13,7 @@ import { signOut } from '@/lib/actions/auth';
 import { useCoupleData } from '@/lib/couple-data';
 import { genderOf, possessive } from '@/lib/people';
 import { computeStreaks } from '@/lib/streaks';
-import { coupleThemes } from '@/lib/theme';
+import { otherCharacter, themeFor } from '@/lib/theme';
 import { useRequireViewer, type Viewer } from '@/lib/viewer';
 import { FONT, NEUTRAL } from '@/constants/theme';
 
@@ -32,7 +32,12 @@ function Profile({ viewer }: { viewer: Viewer }) {
     (task) => task.assigned_to === viewer.userId && !task.archived_at,
   );
 
-  const { viewerTheme: theme, partnerTheme } = coupleThemes(viewer.profile, viewer.partner);
+  const theme = themeFor(viewer.profile.avatar_character);
+  const partnerCharacter =
+    viewer.partner.avatar_character === viewer.profile.avatar_character
+      ? otherCharacter(theme.key)
+      : viewer.partner.avatar_character;
+  const partnerTheme = themeFor(partnerCharacter);
 
   const { coupleStreak, ownStreaks } = computeStreaks(
     [

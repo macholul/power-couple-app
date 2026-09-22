@@ -15,7 +15,7 @@ import { useCoupleData } from '@/lib/couple-data';
 import { addDaysToKey, dateKeyIn, weekdayOfKey } from '@/lib/dates';
 import { leftToRight } from '@/lib/people';
 import { computeStreaks } from '@/lib/streaks';
-import { coupleThemes, type SideTheme } from '@/lib/theme';
+import { otherCharacter, themeFor, type SideTheme } from '@/lib/theme';
 import type {
   LoveNote,
   Profile,
@@ -86,7 +86,12 @@ function Home({ viewer }: { viewer: Viewer }) {
   const router = useRouter();
   const { tasks, completions, notes, daySchedules, loading, refresh } = useCoupleData();
 
-  const { viewerTheme, partnerTheme } = coupleThemes(viewer.profile, viewer.partner);
+  const viewerTheme = themeFor(viewer.profile.avatar_character);
+  const partnerCharacter =
+    viewer.partner.avatar_character === viewer.profile.avatar_character
+      ? otherCharacter(viewerTheme.key)
+      : viewer.partner.avatar_character;
+  const partnerTheme = themeFor(partnerCharacter);
 
   // the woman's panel on the left, the man's on the right
   const sides = leftToRight(viewer.profile, viewer.partner).map((profile) => ({

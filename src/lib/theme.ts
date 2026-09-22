@@ -1,8 +1,6 @@
 import type { ImageSourcePropType } from 'react-native';
 
-import { characterFor } from '@/lib/characters';
-import { genderOf, otherGender } from '@/lib/people';
-import type { Gender, Profile } from '@/lib/types/database';
+export type CharacterKey = 'mae' | 'baris';
 
 /**
  * The web used CSS `radial-gradient(circle at 50% Y%, inner 0%, outer 70%)`
@@ -17,8 +15,8 @@ export interface StageGradient {
   centerY: number;
 }
 
-/** A side's colours: pink for her, blue for him, whichever character each picked. */
-export interface Palette {
+export interface SideTheme {
+  key: CharacterKey;
   panel: string;
   panelBorder: string;
   accent: string;
@@ -32,11 +30,6 @@ export interface Palette {
   profileStageGradient: StageGradient;
   shadowSoft: string;
   shadowBadge: string;
-}
-
-/** One side of the couple: its colours, and its character's images. */
-export interface SideTheme extends Palette {
-  gender: Gender;
   // On the web these were URL strings under /chibis. Metro resolves images at
   // build time, so they are require()d module refs here instead.
   cutePoseImg: ImageSourcePropType;
@@ -45,8 +38,9 @@ export interface SideTheme extends Palette {
   faceImg: ImageSourcePropType;
 }
 
-export const PALETTES: Record<Gender, Palette> = {
-  female: {
+export const THEMES: Record<CharacterKey, SideTheme> = {
+  mae: {
+    key: 'mae',
     panel: '#FFE3EE',
     panelBorder: '#FFC9DE',
     accent: '#E5628E',
@@ -60,8 +54,13 @@ export const PALETTES: Record<Gender, Palette> = {
     profileStageGradient: { inner: '#FFD1E3', outer: '#FFE3EE', centerY: 0.85 },
     shadowSoft: 'rgba(201,74,118,0.08)',
     shadowBadge: 'rgba(201,74,118,0.15)',
+    cutePoseImg: require('@/assets/chibis/mae-cute.webp'),
+    waveImg: require('@/assets/chibis/mae-wave.webp'),
+    madImg: require('@/assets/chibis/mae-mad.webp'),
+    faceImg: require('@/assets/chibis/mae-face.webp'),
   },
-  male: {
+  baris: {
+    key: 'baris',
     panel: '#E3EFFF',
     panelBorder: '#C9DFFF',
     accent: '#5B8AD6',
@@ -75,43 +74,19 @@ export const PALETTES: Record<Gender, Palette> = {
     profileStageGradient: { inner: '#C9DFFF', outer: '#E3EFFF', centerY: 0.85 },
     shadowSoft: 'rgba(74,121,201,0.08)',
     shadowBadge: 'rgba(74,121,201,0.15)',
+    cutePoseImg: require('@/assets/chibis/baris-cute.webp'),
+    waveImg: require('@/assets/chibis/baris-wave.webp'),
+    madImg: require('@/assets/chibis/baris-mad.webp'),
+    faceImg: require('@/assets/chibis/baris-face.webp'),
   },
 };
 
-/** One person's theme: their gender's colours and their character's images. */
-export function sideTheme(gender: Gender, character: string | null | undefined): SideTheme {
-  const { images } = characterFor(character, gender);
-  return {
-    ...PALETTES[gender],
-    gender,
-    cutePoseImg: images.cute,
-    waveImg: images.wave,
-    madImg: images.mad,
-    faceImg: images.face,
-  };
+export function themeFor(character: string | null | undefined): SideTheme {
+  return character === 'baris' ? THEMES.baris : THEMES.mae;
 }
 
-type Person = Pick<Profile, 'gender' | 'avatar_character'>;
-
-/**
- * Both sides of a couple. Two people of the same gender can only be a couple
- * from before that was a rule; the partner then takes the other gender's
- * colours and default character, so the sides still look different, as they
- * did when a profile had only its character.
- */
-export function coupleThemes(
-  viewer: Person,
-  partner: Person,
-): { viewerTheme: SideTheme; partnerTheme: SideTheme } {
-  const viewerGender = genderOf(viewer);
-  const partnerGender = genderOf(partner);
-  return {
-    viewerTheme: sideTheme(viewerGender, viewer.avatar_character),
-    partnerTheme:
-      partnerGender === viewerGender
-        ? sideTheme(otherGender(viewerGender), null)
-        : sideTheme(partnerGender, partner.avatar_character),
-  };
+export function otherCharacter(character: CharacterKey): CharacterKey {
+  return character === 'mae' ? 'baris' : 'mae';
 }
 
 export { NEUTRAL, FONT } from '@/constants/theme';
