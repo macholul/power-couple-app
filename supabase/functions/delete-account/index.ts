@@ -11,21 +11,11 @@
  */
 import { createClient } from '@supabase/supabase-js';
 
+import { secretKey } from '../_shared/secret-key.ts';
+
 const BUCKET = 'completion-photos';
 /** the most paths the Storage API removes in one call */
 const REMOVE_BATCH = 1000;
-
-/** The project's secret key: the new kind when present, else the legacy one. */
-function secretKey(): string {
-  const keys = Deno.env.get('SUPABASE_SECRET_KEYS');
-  if (keys) {
-    const key = (JSON.parse(keys) as Record<string, string>).default;
-    if (key) return key;
-  }
-  const legacy = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-  if (!legacy) throw new Error('no secret key in the environment');
-  return legacy;
-}
 
 const reply = (status: number, body: Record<string, unknown>) =>
   Response.json(body, { status });

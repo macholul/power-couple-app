@@ -436,3 +436,7 @@ enabled = true
 # rejects calls without a valid session before the function runs.
 [functions.delete-account]
 verify_jwt = true
+
+# Called signed out, with the anon key, which is a JWT for this project.
+[functions.account-exists]
+verify_jwt = true

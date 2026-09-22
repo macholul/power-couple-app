@@ -210,6 +210,18 @@ through review and accept the risk.
 npx supabase functions deploy delete-account --use-api
 ```
 
+- **Account check.** `account-exists`, deployed on 22 September 2026, tells
+  the password reset screen whether an account uses the email typed, so it
+  can say when none does. Supabase's sign-up reveals that anyway. The lookup
+  behind it answers at most 30 times per 15 minutes for the whole project,
+  and past that the app falls back to its neutral message. Both functions
+  import `supabase/functions/_shared/secret-key.ts`, so after changing that
+  file, redeploy both. After changing only this one:
+
+```bash
+npx supabase functions deploy account-exists --use-api
+```
+
 ## Know before launch
 
 ### The couples rule
