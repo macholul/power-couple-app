@@ -1,7 +1,7 @@
 import type { AuthError } from '@supabase/supabase-js';
 
 import { supabase } from '@/lib/supabase';
-import { characterFor } from '@/lib/people';
+import { charactersFor, DEFAULT_CHARACTER } from '@/lib/characters';
 import type { Gender } from '@/lib/types/database';
 
 export type AuthActionState = { error: string | null };
@@ -55,11 +55,14 @@ export async function signUp({
   email,
   password,
   gender,
+  character: chosen,
 }: {
   name: string;
   email: string;
   password: string;
   gender: Gender;
+  /** one of charactersFor(gender); anything else becomes the gender's default */
+  character: string | null;
 }): Promise<AuthActionState & { needsConfirmation?: boolean }> {
   const trimmed = name.trim();
   if (!trimmed) return { error: 'what should we call you?' };
@@ -69,7 +72,9 @@ export async function signUp({
   const weak = tooShort(password);
   if (weak) return weak;
 
-  const character = characterFor(gender);
+  const character = charactersFor(gender).some((candidate) => candidate.key === chosen)
+    ? chosen!
+    : DEFAULT_CHARACTER[gender];
   const { data, error } = await supabase.auth.signUp({
     email,
     password,

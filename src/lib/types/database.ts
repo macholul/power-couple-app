@@ -1,5 +1,10 @@
 export type CompletionStatus = "submitted" | "approved";
-export type AvatarCharacter = "mae" | "baris";
+/**
+ * A key from private.characters, which only ever holds one that fits the
+ * profile's gender. It may be one this version of the app doesn't ship yet,
+ * so draw it with characterFor() in lib/characters.
+ */
+export type AvatarCharacter = string;
 export type Gender = "female" | "male";
 
 export interface Profile {

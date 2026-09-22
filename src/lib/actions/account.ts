@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { MAX_NAME_LENGTH } from '@/lib/actions/auth';
-import { characterFor } from '@/lib/people';
+import { charactersFor, DEFAULT_CHARACTER } from '@/lib/characters';
 import type { Gender } from '@/lib/types/database';
 
 export type AccountActionState = { error: string | null };
@@ -19,14 +19,30 @@ export async function rename(userId: string, name: string): Promise<AccountActio
 /**
  * Only while unpaired: the database refuses it during a couple, since
  * otherwise pairing first and changing afterwards would get around the
- * opposite-gender rule. The character follows, until characters can be
- * chosen on their own.
+ * opposite-gender rule. Characters belong to one gender, so this switches to
+ * the new gender's default; the database would do the same.
  */
 export async function setGender(userId: string, gender: Gender): Promise<AccountActionState> {
   const { error } = await supabase
     .from('profiles')
-    .update({ gender, avatar_character: characterFor(gender) })
+    .update({ gender, avatar_character: DEFAULT_CHARACTER[gender] })
     .eq('id', userId);
+  if (error) return { error: error.message.toLowerCase() };
+  return { error: null };
+}
+
+/** One of the characters for the person's gender; the database refuses others. */
+export async function setCharacter(
+  userId: string,
+  gender: Gender,
+  character: string,
+): Promise<AccountActionState> {
+  if (!charactersFor(gender).some((candidate) => candidate.key === character)) {
+    return { error: 'pick one of these characters' };
+  }
+  const { error } = await supabase.from('profiles').update({ avatar_character: character }).eq('id', userId);
+  // the app offers a character its database row isn't there for yet
+  if (error?.code === '23503') return { error: "that character isn't available yet" };
   if (error) return { error: error.message.toLowerCase() };
   return { error: null };
 }

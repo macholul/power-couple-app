@@ -11,8 +11,9 @@
  */
 import { addDaysToKey, dateKeyIn, monthStartOfKey, weekdayOfKey } from '@/lib/dates';
 import { computeStreaks, type StreakSide } from '@/lib/streaks';
-import { characterFor, genderOf, leftToRight, possessive } from '@/lib/people';
-import { THEMES, themeFor, otherCharacter } from '@/lib/theme';
+import { CHARACTERS, characterFor, charactersFor, DEFAULT_CHARACTER } from '@/lib/characters';
+import { genderOf, leftToRight, otherGender, possessive } from '@/lib/people';
+import { coupleThemes, PALETTES, sideTheme } from '@/lib/theme';
 import { gateTarget, type ViewerState } from '@/lib/viewer';
 import { decodeBase64 } from '@/lib/photos';
 import { stageGeometry } from '@/components/character-stage';
@@ -209,8 +210,7 @@ export function runSelfTests(): TestResult[] {
   check('people', 'gender is read when stored', genderOf({ gender: 'male', avatar_character: 'mae' }), 'male');
   check('people', 'no gender: baris is a man', genderOf({ gender: null, avatar_character: 'baris' }), 'male');
   check('people', 'no gender: mae is a woman', genderOf({ avatar_character: 'mae' }), 'female');
-  check('people', 'a woman is mae', characterFor('female'), 'mae');
-  check('people', 'a man is baris', characterFor('male'), 'baris');
+  check('people', 'otherGender flips', otherGender('female'), 'male');
   check('people', 'her', possessive('female'), 'her');
   check('people', 'his', possessive('male'), 'his');
   {
@@ -226,25 +226,37 @@ export function runSelfTests(): TestResult[] {
 
   // ------------------------------------------------------------------ theme
 
-  // themeFor mirrors the web's defaulting: anything that is not "baris" is mae
-  check('theme', 'themeFor baris', themeFor('baris').key, 'baris');
-  check('theme', 'themeFor mae', themeFor('mae').key, 'mae');
-  check('theme', 'themeFor null defaults to mae', themeFor(null).key, 'mae');
-  check('theme', 'themeFor junk defaults to mae', themeFor('nonsense').key, 'mae');
-  check('theme', 'otherCharacter flips', otherCharacter('mae'), 'baris');
+  // characters: the defaults match private.characters' is_default rows
+  check('characters', 'a woman starts as mae', DEFAULT_CHARACTER.female, 'mae');
+  check('characters', 'a man starts as baris', DEFAULT_CHARACTER.male, 'baris');
+  check('characters', 'every gender has its default', charactersFor('male').some((c) => c.key === 'baris'), true);
+  check('characters', 'a known character of the gender is drawn', characterFor('baris', 'male').key, 'baris');
+  check('characters', "another gender's character falls back", characterFor('baris', 'female').key, 'mae');
+  check('characters', 'an unknown character falls back', characterFor('nonsense', 'male').key, 'baris');
+  check('characters', 'no character falls back', characterFor(null, 'female').key, 'mae');
+  check('characters', 'keys are unique', new Set(CHARACTERS.map((c) => c.key)).size, CHARACTERS.length);
 
   // Metro turns require()d images into numeric asset ids at bundle time. A
   // missing file would fail the build, but a mis-wired alias could yield
   // undefined — so assert every chibi actually resolved.
-  const imageKeys = ['cutePoseImg', 'waveImg', 'madImg', 'faceImg'] as const;
-  const unresolved: string[] = [];
-  for (const key of ['mae', 'baris'] as const) {
-    for (const field of imageKeys) {
-      if (THEMES[key][field] == null) unresolved.push(`${key}.${field}`);
-    }
+  const poses = ['face', 'wave', 'cute', 'mad'] as const;
+  const unresolved = CHARACTERS.flatMap((character) =>
+    poses.filter((pose) => character.images[pose] == null).map((pose) => `${character.key}.${pose}`),
+  );
+  check('characters', 'every chibi image resolved', unresolved, []);
+
+  // theme: colours follow the gender, images the character
+  check('theme', 'a man is blue', sideTheme('male', 'baris').accent, PALETTES.male.accent);
+  check('theme', 'images come from the character', sideTheme('female', 'mae').faceImg, CHARACTERS[0].images.face);
+  {
+    const woman = { gender: 'female' as const, avatar_character: 'mae' };
+    const man = { gender: 'male' as const, avatar_character: 'baris' };
+    const { viewerTheme, partnerTheme } = coupleThemes(woman, man);
+    check('theme', 'a couple: each side has its own gender', [viewerTheme.gender, partnerTheme.gender], ['female', 'male']);
+    const legacy = coupleThemes(woman, { gender: 'female' as const, avatar_character: 'mae' });
+    check('theme', 'same gender, from before the rule: the sides still differ', legacy.partnerTheme.gender, 'male');
   }
-  check('theme', 'all 8 chibi images resolved', unresolved, []);
-  check('theme', 'mae stage gradient shape', THEMES.mae.stageGradient, {
+  check('theme', 'her stage gradient shape', PALETTES.female.stageGradient, {
     inner: '#FFD1E3',
     outer: '#FFE3EE',
     centerY: 0.8,
