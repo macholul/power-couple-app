@@ -67,6 +67,9 @@ Done on 21 and 22 September 2026:
   8-digit code the app asks for, not a link.
 - The privacy policy names Google as the email provider, and says that copies
   of account emails stay in the Gmail account for up to 60 days.
+- A test password-reset email arrived, and email confirmation is on: new
+  accounts enter the code from the email before they can sign in. This
+  applies to the old web app's sign-ups too.
 
 Still to do:
 
@@ -83,14 +86,6 @@ Still to do:
    Choose `setUp` in the function menu and press Run. Google warns that it
    hasn't verified the app, as it does for any script you write yourself:
    choose Advanced, go to the project, and allow access.
-3. **Test** (you). Ask the app for a password-reset code for your own address,
-   and check that the email arrives from `trypowercouple@gmail.com` with an
-   8-digit code.
-4. **Email confirmation** (Claude, once the test email has arrived). Set
-   `enable_confirmations = true` under `[auth.email]` in
-   `supabase/config.toml` and push. Doing this before the mail works would
-   leave new users waiting for a code that never arrives. It applies to
-   everyone who signs up to this Supabase project, including the old web app.
 
 **Later, your own domain.** If Gmail's limit starts to pinch, buy a domain
 (`trypowercouple.com` was free on 21 September 2026; `powercouple.com` and
