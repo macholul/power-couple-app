@@ -25,8 +25,10 @@ import {
 } from '@/lib/actions/auth';
 import { useAuth } from '@/lib/auth';
 import { OPERATOR } from '@/content/legal';
+import { CharacterPicker } from '@/components/character-picker';
 import { FloatingHearts } from '@/components/floating-hearts';
 import { GenderChoice } from '@/components/gender-choice';
+import { charactersFor, DEFAULT_CHARACTER } from '@/lib/characters';
 import { Wordmark } from '@/components/wordmark';
 import { FONT, NEUTRAL } from '@/constants/theme';
 import type { Gender } from '@/lib/types/database';
@@ -78,6 +80,8 @@ export default function LoginScreen() {
   const { recovering } = useAuth();
   const [mode, setMode] = useState<Mode>('login');
   const [gender, setGender] = useState<Gender | null>(null);
+  /** null until picked: the gender's default */
+  const [character, setCharacter] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -125,7 +129,7 @@ export default function LoginScreen() {
       case 'signup': {
         if (!gender) return fail('are you a woman or a man?');
         begin();
-        const result = await signUp({ name, email: address, password, gender });
+        const result = await signUp({ name, email: address, password, gender, character });
         if (result.error) return fail(result.error);
         if (result.needsConfirmation) {
           setPassword('');
@@ -249,7 +253,24 @@ export default function LoginScreen() {
                     returnKeyType="next"
                     accessibilityLabel="Your name"
                   />
-                  <GenderChoice value={gender} onChange={setGender} />
+                  <GenderChoice
+                    value={gender}
+                    onChange={(next) => {
+                      setGender(next);
+                      setCharacter(null);
+                    }}
+                  />
+                  {/* only when there is a choice: one character needs no picker */}
+                  {gender && charactersFor(gender).length > 1 && (
+                    <>
+                      <Text style={styles.pickerLabel}>your character</Text>
+                      <CharacterPicker
+                        gender={gender}
+                        value={character ?? DEFAULT_CHARACTER[gender]}
+                        onChange={setCharacter}
+                      />
+                    </>
+                  )}
                 </>
               )}
 
@@ -431,6 +452,13 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   form: { gap: 12 },
+  pickerLabel: {
+    fontFamily: FONT.semibold,
+    fontSize: 13,
+    color: NEUTRAL.secondary,
+    textAlign: 'center',
+    marginTop: 2,
+  },
   input: {
     borderWidth: 2,
     borderColor: NEUTRAL.cardBorder,
