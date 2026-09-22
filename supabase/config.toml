@@ -200,8 +200,11 @@ minimum_password_length = 8
 # rp_origins = ["http://127.0.0.1:3000"]
 
 [auth.rate_limit]
-# Number of emails that can be sent per hour. Requires auth.email.smtp to be enabled.
-email_sent = 2
+# Number of emails that can be sent per hour. `config push` doesn't manage this
+# value (`config diff` lists it as unmanaged), so it is set in the dashboard
+# under Authentication → Rate Limits and only recorded here. 20 an hour keeps
+# a whole day under Gmail's limit of about 500 emails.
+email_sent = 20
 # Number of SMS messages that can be sent per hour. Requires auth.sms to be enabled.
 sms_sent = 30
 # Number of anonymous sign-ins that can be made per hour per IP address. Requires enable_anonymous_sign_ins = true.

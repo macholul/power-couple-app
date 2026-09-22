@@ -56,45 +56,41 @@ are that every email comes from a Gmail address, and that Gmail allows a
 personal account about 500 emails a day and blocks sending for 1 to 24 hours
 past that. If the app grows, move to your own domain (below).
 
-1. **A Gmail account just for the app.** Better than your personal one: the
-   app's mail, and Gmail's copy of everything it sends, stay out of your own
-   inbox, and if Gmail ever blocks it for sending too much, your own email
-   keeps working. Turn on 2-Step Verification, which app passwords require.
-2. **App password.** Signed in as the app's account, open
-   myaccount.google.com/apppasswords and create one named `powercouple`. Copy
-   the 16 characters without the spaces. Changing that account's password
-   revokes it, and the app's emails stop until you create a new one and enter
-   it in Supabase.
-3. **Supabase** → [SMTP settings](https://supabase.com/dashboard/project/imhpwatxupusiiujwvdr/auth/smtp).
-   Turn on custom SMTP:
-   - Sender email and username: the app's Gmail address. Gmail only sends as
-     the account that signed in.
-   - Sender name: `powercouple`
-   - Host `smtp.gmail.com`, port `465`
-   - Password: the app password
+Done on 21 and 22 September 2026:
 
-Then tell Claude, who will:
+- `powercouple@gmail.com`, a Gmail account only the app uses, sends through
+  Supabase's [SMTP settings](https://supabase.com/dashboard/project/imhpwatxupusiiujwvdr/auth/smtp):
+  host `smtp.gmail.com`, port `465`, sender name `powercouple`, and a Google
+  app password. Changing that account's password revokes the app password,
+  and the app's emails stop until you create a new one and enter it there.
+- The two email templates in `supabase/templates/` are live. They show the
+  8-digit code the app asks for, not a link.
+- The privacy policy names Google as the email provider, and says that copies
+  of account emails stay in the Gmail account for up to 60 days.
 
-- set `OPERATOR.emailProvider` in `src/content/legal.ts` to
-  `Google LLC (United States)`, add to the privacy policy how long the copies
-  in the Gmail account's Sent folder are kept, and run `npm run legal:export`.
-  Korea's privacy law asks the policy to name each provider, where it is, and
-  how long data is kept;
-- set `email_sent` under `[auth.rate_limit]` in `supabase/config.toml` to 20
-  an hour, which keeps a whole day under Gmail's limit. The file still says 2,
-  Supabase's limit before custom SMTP, so pushing it unchanged would throttle
-  the app to 2 emails an hour;
-- run `npx supabase config diff`, then `config push`, for that limit and the
-  two email templates in `supabase/templates/`. Supabase refuses template
-  changes until custom SMTP is on, and the app asks for the code in the email,
-  not a link;
-- set `enable_confirmations = true` under `[auth.email]` and push. Doing this
-  before the mail works would leave new users waiting for a code that never
-  arrives. It applies to everyone who signs up to this Supabase project,
-  including the old web app.
+Still to do:
 
-Finally, test it yourself: ask the app for a password-reset code for your own
-address and check that the email arrives.
+1. **Rate limit** (you). In
+   [Rate Limits](https://supabase.com/dashboard/project/imhpwatxupusiiujwvdr/auth/rate-limits),
+   set the limit for sending emails to 20 an hour, which keeps a whole day
+   under Gmail's limit. `config push` doesn't manage this value, so
+   `supabase/config.toml` only records it.
+2. **Cleanup** (you). Gmail keeps a copy of every email it sends, and those
+   contain users' addresses. [gmail-cleanup.gs](gmail-cleanup.gs) trashes
+   everything older than 29 days, every day, which keeps the policy's 60-day
+   promise. Signed in as `powercouple@gmail.com`, open script.google.com and
+   make a new project, paste the file over the code there, and save. Choose
+   `setUp` in the function menu and press Run. Google warns that it hasn't
+   verified the app, as it does for any script you write yourself: choose
+   Advanced, go to the project, and allow access.
+3. **Test** (you). Ask the app for a password-reset code for your own address,
+   and check that the email arrives from `powercouple@gmail.com` with an
+   8-digit code.
+4. **Email confirmation** (Claude, once the test email has arrived). Set
+   `enable_confirmations = true` under `[auth.email]` in
+   `supabase/config.toml` and push. Doing this before the mail works would
+   leave new users waiting for a code that never arrives. It applies to
+   everyone who signs up to this Supabase project, including the old web app.
 
 **Later, your own domain.** If Gmail's limit starts to pinch, buy a domain
 (`trypowercouple.com` was free on 21 September 2026; `powercouple.com` and
@@ -204,8 +200,8 @@ through review and accept the risk.
 
 ## Already done
 
-- **Publisher.** `OPERATOR` in `src/content/legal.ts` names the publisher and
-  the minimum age; only `emailProvider` is left (step 4).
+- **Publisher.** `OPERATOR` in `src/content/legal.ts` names the publisher,
+  the minimum age and the email provider, and `npm run preflight` passes.
 - **Database and auth settings.** The migrations and `supabase/config.toml`
   mirror production, and `npm run db:verify` checks that they still do. The
   minimum password length is 8.
