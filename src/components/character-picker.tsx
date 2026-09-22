@@ -50,11 +50,13 @@ export function CharacterPicker({
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 10 },
+  // Four faces fit one row even in the sign-up card on a 375-point iPhone:
+  // 4 × 60 + 3 × 8 = 264 of the 283 points there.
+  row: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8 },
   option: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     borderWidth: 3,
     overflow: 'hidden',
   },
