@@ -226,8 +226,9 @@ npx supabase functions deploy account-exists --use-api
 
 The boy's cap in the app icon carries the MLB logo. App Review rejects apps
 that use someone else's trademark without permission (guideline 5.2.1), and
-icons get a close look. Replace the icon, and any character image in the app
-that shows the logo, before you submit.
+icons get a close look. Replace the icon, the splash image, and Baris's four
+character images before you submit. [../characters.md](../characters.md) lists
+what each image needs.
 
 ### The old web app is paused
 
