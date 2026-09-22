@@ -119,16 +119,23 @@ a few months.
 
 ### 8. First build
 
-Claude runs `npm run preflight` first, and it must print no problems. Then:
+Done on 22 September 2026: version 1.0.0, build 1, from commit `b703d58`
+([build page](https://expo.dev/accounts/baristurker/projects/power-couple-app/builds/9784f13f-6b37-453c-b3ff-ad4d40bfaae4)).
+EAS created the Apple Distribution certificate and the provisioning profile
+for team `BK552M7X5B` (individual) and keeps both for later builds. The
+profile expires on 22 September 2027. The first build after that asks to
+renew it; apps already on the App Store keep working.
+
+For every later build, Claude runs `npm run preflight` first, and it must
+print no problems. Then:
 
 ```bash
 npx eas-cli@latest build --platform ios --profile production
 ```
 
-It asks you to sign in with your Apple ID, including the two-factor code. EAS
-uses that to create the signing certificate and provisioning profile, which is
-why it has to be you, in your own terminal. Build numbers are managed remotely
-and go up on every production build.
+It asks you to sign in with your Apple ID, including the two-factor code,
+which is why it has to be you, in your own terminal. Build numbers are managed
+remotely and go up on every production build.
 
 ### 9. TestFlight on your own iPhone, and the demo accounts
 
@@ -136,9 +143,13 @@ and go up on every production build.
 npx eas-cli@latest submit --platform ios --profile production --latest
 ```
 
-It may ask for your Apple ID again. The build appears in TestFlight after
-Apple processes it, usually 10 to 15 minutes. Install the TestFlight app on
-your iPhone, sign in with the same Apple Account and install the build.
+It may ask for your Apple ID again. If it offers to create an App Store
+Connect API key, accept: EAS keeps the key and uses it for later uploads.
+Apple then processes the build, usually in 10 to 15 minutes, and emails you
+when it is ready. In App Store Connect, open the app's TestFlight tab, create
+an internal testing group, and add yourself and the build to it. Then install
+the TestFlight app on your iPhone, sign in with the same Apple Account, and
+install the build from there.
 
 The simulator has no camera, so proof photos can only be tested on a real
 phone. Run every flow there with the demo accounts
