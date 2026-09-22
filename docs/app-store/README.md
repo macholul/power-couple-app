@@ -199,6 +199,10 @@ through review and accept the risk.
 - **Database and auth settings.** The migrations and `supabase/config.toml`
   mirror production, and `npm run db:verify` checks that they still do. The
   minimum password length is 8.
+- **Logos.** App Review rejects other companies' trademarks (guideline
+  5.2.1), so on 22 September 2026 the MLB logo and New Era mark on Baris's
+  cap were painted over in the cap's black: in his four images, the app
+  icon, the splash image and the Android icon.
 - **Account deletion.** `delete-account` has been deployed since 17 September
   2026. It refuses anyone not signed in, which was checked against the live
   function. It needs no secrets set by hand: Supabase provides the project URL
@@ -222,13 +226,6 @@ npx supabase functions deploy account-exists --use-api
 
 ## Know before launch
 
-### The app icon shows another company's logo
-
-The boy's cap in the app icon carries the MLB logo. App Review rejects apps
-that use someone else's trademark without permission (guideline 5.2.1), and
-icons get a close look. Replace the icon, and any character image in the app
-that shows the logo, before you submit.
-
 ### The old web app is paused
 
 It was paused on Vercel on 22 September 2026: its sign-up couldn't take the
@@ -236,7 +233,6 @@ emailed code, and the app is iPhone-only. Accounts made there sign in to the
 iPhone app as they are. Delete the Vercel project once you are sure you won't
 need it; it only ever held the public URL and anon key, so no key needs
 rotating.
-
 
 ### The couples rule
 
