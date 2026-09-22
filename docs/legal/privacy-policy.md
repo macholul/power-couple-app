@@ -1,6 +1,6 @@
 # Privacy policy
 
-_Last updated 17 September 2026_
+_Last updated 22 September 2026_
 
 ## The short version
 
@@ -38,10 +38,10 @@ Your email address, password, name and gender are needed to create an account an
 
 **Your partner.** While you are paired, your partner sees your name, character, goals, photo proofs, confirmations, notes and streaks, and you see theirs. When a couple ends, neither of you can see the other’s information any more.
 
-**Our service providers.** A small number of companies help us run powercouple. They use your information only on our instructions, to provide their service to us, under agreements that require them to protect it:
+**Our service providers.** Two companies help us run powercouple:
 
-- Supabase Pte. Ltd. (Singapore), for our database, sign-in, photo storage and server functions.
-- [EMAIL PROVIDER], for delivering account emails.
+- Supabase Pte. Ltd. (Singapore), for our database, sign-in, photo storage and server functions. It uses your information only on our instructions, to provide its service to us, under an agreement that requires it to protect your information.
+- Google LLC (United States), whose Gmail service sends our account emails. Google handles them under its own terms and privacy policy.
 
 **When the law requires it.** We disclose information when the law requires it, such as under a valid court order, and only what it requires. Unless the law forbids it, we will tell you first.
 
@@ -53,13 +53,13 @@ Your information is stored in Japan, in our hosting provider’s Tokyo data cent
 
 - What: everything described under “What we collect and why”.
 - To whom: Supabase Pte. Ltd., Singapore (privacy@supabase.com). It stores the information in Japan, and may reach it from Singapore and the United States to run and support the service.
-- Also: [EMAIL PROVIDER] receives your email address, to deliver account emails.
-- When and how: whenever you use the app, over encrypted connections.
+- Also: Google LLC (United States), contact support.google.com/policies?p=privpol_privts. It receives your email address and the account emails we send you, to deliver them, and may store them in the United States and other countries where it has servers.
+- When and how: whenever you use the app, and whenever we send you an account email, over encrypted connections.
 - Why: to host powercouple’s database, sign-in, photos and emails.
 - For how long: as described under “How long we keep it”.
 - Saying no: the app can’t work without these transfers. If you don’t want them, don’t create an account, or delete yours in account settings.
 
-The European Commission and the United Kingdom recognize Japan as protecting personal data adequately, and Supabase’s access from other countries is covered by the European Commission’s Standard Contractual Clauses.
+The European Commission and the United Kingdom recognize Japan as protecting personal data adequately, and Supabase’s access from other countries is covered by the European Commission’s Standard Contractual Clauses. Google LLC is certified under the EU-U.S. Data Privacy Framework, its UK Extension, and the Swiss-U.S. Data Privacy Framework.
 
 ## How long we keep it
 
@@ -68,7 +68,8 @@ The European Commission and the United Kingdom recognize Japan as protecting per
 - Records of wrong invite codes: 15 minutes.
 - Server logs: up to 7 days.
 - Database backups, which contain account information but not photos: up to 7 days.
-- Email delivery records: as long as [EMAIL PROVIDER] keeps them under its own policy.
+- Account emails, and any replies or bounce notices: up to 60 days in the Gmail account we send them from. Anything older than 30 days is moved to the trash, and Gmail empties the trash 30 days later.
+- Google’s own records of delivering those emails: as long as Google keeps them under its privacy policy.
 
 We keep information longer only when the law requires it, or to deal with a legal claim.
 

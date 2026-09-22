@@ -9,7 +9,9 @@
  * and Korea's PIPA (Articles 28-8 and 30). Facts about the service come from
  * the project itself: the database region, what the migrations keep and for
  * how long, Supabase's log and backup retention on the Free and Pro plans
- * (1–7 days each), and Supabase's data processing addendum.
+ * (1–7 days each), and Supabase's data processing addendum. For account
+ * emails, they come from Google's privacy policy and its Data Privacy
+ * Framework certification (policies.google.com/privacy/frameworks).
  *
  * Nothing in this file may import anything: the export script runs it
  * directly under Node.
@@ -37,12 +39,15 @@ export const OPERATOR = {
   minimumAge: '14',
   /**
    * The company that delivers sign-up and password reset emails, with its
-   * country, e.g. "Resend, Inc. (United States)". PIPA requires naming both.
+   * country; PIPA requires naming both. The emails go out through Gmail, from
+   * an account that only the app uses, so the policy also says what Gmail
+   * keeps and for how long. Changing provider means rewording those
+   * sentences, not just this value.
    */
-  emailProvider: '[EMAIL PROVIDER]',
+  emailProvider: 'Google LLC (United States)',
 };
 
-export const EFFECTIVE_DATE = '17 September 2026';
+export const EFFECTIVE_DATE = '22 September 2026';
 
 export const ATTRIBUTION =
   'Adapted from the Basecamp open-source policies (github.com/basecamp/policies), ' +
@@ -138,13 +143,10 @@ export const PRIVACY_POLICY: LegalDocument = {
           'While you are paired, your partner sees your name, character, goals, photo proofs, confirmations, notes and streaks, and you see theirs. When a couple ends, neither of you can see the other’s information any more.',
           'Your partner.',
         ),
-        p(
-          'A small number of companies help us run powercouple. They use your information only on our instructions, to provide their service to us, under agreements that require them to protect it:',
-          'Our service providers.',
-        ),
+        p('Two companies help us run powercouple:', 'Our service providers.'),
         list(
-          'Supabase Pte. Ltd. (Singapore), for our database, sign-in, photo storage and server functions.',
-          `${emailProvider}, for delivering account emails.`,
+          'Supabase Pte. Ltd. (Singapore), for our database, sign-in, photo storage and server functions. It uses your information only on our instructions, to provide its service to us, under an agreement that requires it to protect your information.',
+          `${emailProvider}, whose Gmail service sends our account emails. Google handles them under its own terms and privacy policy.`,
         ),
         p(
           'We disclose information when the law requires it, such as under a valid court order, and only what it requires. Unless the law forbids it, we will tell you first.',
@@ -165,14 +167,14 @@ export const PRIVACY_POLICY: LegalDocument = {
         list(
           'What: everything described under “What we collect and why”.',
           'To whom: Supabase Pte. Ltd., Singapore (privacy@supabase.com). It stores the information in Japan, and may reach it from Singapore and the United States to run and support the service.',
-          `Also: ${emailProvider} receives your email address, to deliver account emails.`,
-          'When and how: whenever you use the app, over encrypted connections.',
+          `Also: ${emailProvider}, contact support.google.com/policies?p=privpol_privts. It receives your email address and the account emails we send you, to deliver them, and may store them in the United States and other countries where it has servers.`,
+          'When and how: whenever you use the app, and whenever we send you an account email, over encrypted connections.',
           'Why: to host powercouple’s database, sign-in, photos and emails.',
           'For how long: as described under “How long we keep it”.',
           'Saying no: the app can’t work without these transfers. If you don’t want them, don’t create an account, or delete yours in account settings.',
         ),
         p(
-          'The European Commission and the United Kingdom recognize Japan as protecting personal data adequately, and Supabase’s access from other countries is covered by the European Commission’s Standard Contractual Clauses.',
+          'The European Commission and the United Kingdom recognize Japan as protecting personal data adequately, and Supabase’s access from other countries is covered by the European Commission’s Standard Contractual Clauses. Google LLC is certified under the EU-U.S. Data Privacy Framework, its UK Extension, and the Swiss-U.S. Data Privacy Framework.',
         ),
       ],
     },
@@ -185,7 +187,8 @@ export const PRIVACY_POLICY: LegalDocument = {
           'Records of wrong invite codes: 15 minutes.',
           'Server logs: up to 7 days.',
           'Database backups, which contain account information but not photos: up to 7 days.',
-          `Email delivery records: as long as ${emailProvider} keeps them under its own policy.`,
+          'Account emails, and any replies or bounce notices: up to 60 days in the Gmail account we send them from. Anything older than 30 days is moved to the trash, and Gmail empties the trash 30 days later.',
+          'Google’s own records of delivering those emails: as long as Google keeps them under its privacy policy.',
         ),
         p('We keep information longer only when the law requires it, or to deal with a legal claim.'),
         p(
