@@ -52,6 +52,13 @@ still paired.
 >
 > **Email sign-in only.** No third-party or social login is offered.
 >
+> **Notifications.** Optional. The app asks for permission on its own screen,
+> with the reason, before iOS asks. There are three switches in account
+> settings, one per kind, and the app works the same with all of them off. The
+> only notifications sent are about the one partner the user is paired with:
+> they finished a goal, they confirmed one, they sent a note, or the user's
+> own goals are still open at the end of their day. No marketing, ever.
+>
 > **What the app is for.** Keeping a daily habit alone is easy to drop. Here
 > each partner sets goals for the weekdays that suit them, photographs the
 > finished goal, and the other confirms it. Days where both finish everything
@@ -69,9 +76,12 @@ still paired.
 > **Outside services.** Supabase Pte. Ltd. (Singapore) provides the database,
 > email-and-password sign-in, photo storage and server functions, with the
 > data stored in its Tokyo region. Google's Gmail delivers our account emails
-> (the sign-up code and password reset code). Expo Application Services builds
-> and uploads the app and is not part of the running app. There are no
-> analytics, advertising, tracking, AI or payment services.
+> (the sign-up code and password reset code). Expo's push service (650
+> Industries, Inc.) passes notifications to Apple's Push Notification service,
+> which delivers them; both receive the push token and the text of the
+> notification, and only if the user turns notifications on. Expo Application
+> Services builds and uploads the app and is not part of the running app.
+> There are no analytics, advertising, tracking, AI or payment services.
 >
 > **Regions.** The app behaves the same everywhere. It is in English only,
 > free in every region, and has no region-specific features or content.

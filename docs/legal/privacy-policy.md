@@ -1,6 +1,6 @@
 # Privacy policy
 
-_Last updated 22 September 2026_
+_Last updated 30 October 2026_
 
 ## The short version
 
@@ -20,6 +20,8 @@ This policy explains what we collect, why, who can see it, how long we keep it, 
 
 **Pairing.** The invite codes you create, and a short-lived record of wrong codes entered from your account, which stops anyone from guessing their way to someone else’s code.
 
+**Notifications.** If you turn notifications on, your phone gives us a token that identifies it, and we store that token with your account so we know where to send them. You choose which notifications you want in account settings. The text we send — your partner’s name, the title of a goal, or the note they sent you — travels through Expo’s push service and Apple on its way to your phone, and we send nothing to either of them if you leave notifications off.
+
 **Technical information.** When the app connects to our servers, our hosting provider records technical details such as IP address, device and app information, and the time. These logs are used to run the service and keep it secure.
 
 **What we don’t collect.** No analytics, no advertising identifiers, no location, and no contacts. The app contains no cookies, advertising or tracking code.
@@ -38,10 +40,12 @@ Your email address, password, name and gender are needed to create an account an
 
 **Your partner.** While you are paired, your partner sees your name, character, goals, photo proofs, confirmations, notes and streaks, and you see theirs. When a couple ends, neither of you can see the other’s information any more.
 
-**Our service providers.** Two companies help us run powercouple:
+**Our service providers.** These companies help us run powercouple:
 
 - Supabase Pte. Ltd. (Singapore), for our database, sign-in, photo storage and server functions. It uses your information only on our instructions, to provide its service to us, under an agreement that requires it to protect your information.
 - Google LLC (United States), whose Gmail service sends our account emails. Google handles them under its own terms and privacy policy.
+- 650 Industries, Inc. (United States), trading as Expo, whose push service passes our notifications to Apple. It receives your notification token and the text of the notification, keeps no copy of that text once it has been handed over, and keeps a record of the handover for 24 hours.
+- Apple Inc. (United States), whose Apple Push Notification service delivers notifications to your phone. This is part of iOS, and Apple handles them under its own privacy policy.
 
 **When the law requires it.** We disclose information when the law requires it, such as under a valid court order, and only what it requires. Unless the law forbids it, we will tell you first.
 
@@ -54,6 +58,7 @@ Your information is stored in Japan, in our hosting provider’s Tokyo data cent
 - What: everything described under “What we collect and why”.
 - To whom: Supabase Pte. Ltd., Singapore (privacy@supabase.com). It stores the information in Japan, and may reach it from Singapore and the United States to run and support the service.
 - Also: Google LLC (United States), contact support.google.com/policies?p=privpol_privts. It receives your email address and the account emails we send you, to deliver them, and may store them in the United States and other countries where it has servers.
+- Also, if you turn notifications on: 650 Industries, Inc. (United States), contact expo.dev/privacy, and Apple Inc. (United States), contact apple.com/legal/privacy/contact. They receive your notification token and the text of each notification, to deliver it.
 - When and how: whenever you use the app, and whenever we send you an account email, over encrypted connections.
 - Why: to host powercouple’s database, sign-in, photos and emails.
 - For how long: as described under “How long we keep it”.
@@ -66,6 +71,9 @@ The European Commission and the United Kingdom recognize Japan as protecting per
 - Your account, profile, and everything in your couples: until you delete your account.
 - Invite codes: until they are used or replaced, and never longer than 7 days.
 - Records of wrong invite codes: 15 minutes.
+- Your notification token: until you turn every notification off, sign out of that phone, or delete your account.
+- Notifications waiting to be sent: up to 3 days once sent, and one day if they could not be.
+- Expo’s record of handing a notification to Apple: 24 hours. Neither Expo nor Apple keeps the text of a notification once it has been delivered.
 - Server logs: up to 7 days.
 - Database backups, which contain account information but not photos: up to 7 days.
 - Account emails, and any replies or bounce notices: up to 60 days in the Gmail account we send them from. Anything older than 30 days is moved to the trash, and Gmail empties the trash 30 days later.
@@ -87,7 +95,7 @@ If you can’t use the app, email baristurkerlol@gmail.com and we will delete yo
 
 ## Your rights
 
-You can see and change most of your information in the app. In account settings you can change your name, change your gender while you are not paired, end your couple, and delete your account.
+You can see and change most of your information in the app. In account settings you can change your name, change your gender while you are not paired, choose which notifications you get, end your couple, and delete your account.
 
 Depending on where you live, including in the European Economic Area, the United Kingdom and California, you also have the right to:
 

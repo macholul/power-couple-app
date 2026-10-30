@@ -55,6 +55,22 @@ check(
   'app.json: expo-image-picker would add a microphone permission the app never uses',
 );
 
+const notificationOptions = expo.plugins?.find(
+  (plugin: unknown) => Array.isArray(plugin) && plugin[0] === 'expo-notifications',
+)?.[1];
+check(notificationOptions, 'app.json: expo-notifications is not configured, so push builds have no entitlement');
+check(
+  notificationOptions?.enableBackgroundRemoteNotifications === false,
+  'app.json: expo-notifications would add the remote-notification background mode, which nothing uses',
+);
+check(
+  expo.ios?.privacyManifests?.NSPrivacyCollectedDataTypes?.some(
+    (type: { NSPrivacyCollectedDataType?: string }) =>
+      type.NSPrivacyCollectedDataType === 'NSPrivacyCollectedDataTypeDeviceID',
+  ),
+  'app.json: push tokens are collected, so the privacy manifest must declare Device ID',
+);
+
 const eas = JSON.parse(read('eas.json'));
 check(eas.cli?.appVersionSource === 'remote', 'eas.json: cli.appVersionSource should be "remote"');
 check(eas.build?.production?.autoIncrement === true, 'eas.json: production builds should autoIncrement');

@@ -20,6 +20,7 @@ For every data type below, answer:
 | Contact Info | Email Address | Sign-in and account emails |
 | Contact Info | Name | The display name partners see |
 | Identifiers | User ID | The account's id |
+| Identifiers | Device ID | The push token of each phone with notifications turned on |
 | User Content | Photos or Videos | Proof photos the user chooses to submit |
 | User Content | Other User Content | Goals, their schedules, notes to a partner |
 | Other Data | Other Data Types | Gender (used to pair), time zone, and the IP addresses in server logs |
@@ -29,11 +30,16 @@ For every data type below, answer:
 Location, Contacts, Health & Fitness, Financial Info, Browsing History, Search
 History, Purchases, Usage Data, Diagnostics, Sensitive Info.
 
-Two judgement calls:
+Three judgement calls:
 
 - **Time zone** is read from the phone's settings to count days on the user's
   calendar. It is not location in Apple's sense (it comes from no location
   service), so it is listed under Other Data rather than Coarse Location.
+- **The push token** is issued by Expo for one installation of the app, not
+  by the device, and it changes if the app is reinstalled. It is still an
+  identifier for a device, and it is stored against the account, so it is
+  declared as a linked Device ID. Notifications are optional and nothing is
+  stored until the person turns them on.
 - **Gender** is not one of Apple's Sensitive Info examples, and the app never
   asks about sexual orientation, so it is also under Other Data. If you'd
   rather be conservative, declaring Sensitive Info as well does no harm.
