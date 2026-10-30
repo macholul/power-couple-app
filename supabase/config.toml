@@ -440,3 +440,9 @@ verify_jwt = true
 # Called signed out, with the anon key, which is a JWT for this project.
 [functions.account-exists]
 verify_jwt = true
+
+# Sends what the database has queued (supabase/functions/push). The app calls
+# it with its session to flush right away; the schedule calls it with the
+# secret key, which is the only credential the reminder sweep accepts.
+[functions.push]
+verify_jwt = true
