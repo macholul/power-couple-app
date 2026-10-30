@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import type { Profile } from '@/lib/types/database';
 
 /**
  * Freezes today's goal schedule in day_schedules (best effort): past days are
@@ -31,5 +32,17 @@ export async function syncTimezone(timeZone: string): Promise<boolean> {
     .eq('id', data.user.id);
   // The web called revalidatePath() here. The caller refreshes the viewer
   // instead, so it returns whether there is anything to refresh.
+  return !error;
+}
+
+/** Which push notifications the viewer wants. Their own row only, by policy. */
+export type NotificationPrefs = Pick<Profile, 'notify_proofs' | 'notify_notes' | 'notify_streak'>;
+
+export async function setNotificationPrefs(
+  userId: string,
+  prefs: Partial<NotificationPrefs>,
+): Promise<boolean> {
+  if (Object.keys(prefs).length === 0) return true;
+  const { error } = await supabase.from('profiles').update(prefs).eq('id', userId);
   return !error;
 }

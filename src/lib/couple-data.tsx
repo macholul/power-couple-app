@@ -11,6 +11,7 @@ import { AppState } from 'react-native';
 
 import { supabase } from '@/lib/supabase';
 import { toDateKey } from '@/lib/dates';
+import { addPushListener } from '@/lib/push';
 import { useRefreshViewer, useViewer } from '@/lib/viewer';
 import { deviceTimeZone } from '@/lib/actions/auth';
 import { recordToday, syncTimezone } from '@/lib/actions/profile';
@@ -135,6 +136,13 @@ export function CoupleDataProvider({ children }: { children: ReactNode }) {
       if (changed) void refreshViewer();
     });
   }, [paired, storedTimeZone, refreshViewer]);
+
+  // A notification means the partner just did something, so the screen behind
+  // it should already be right by the time it is tapped.
+  useEffect(() => {
+    if (!paired) return;
+    return addPushListener(() => void refresh());
+  }, [paired, refresh]);
 
   // AutoRefresh
   useEffect(() => {

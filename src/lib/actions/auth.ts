@@ -2,6 +2,7 @@ import type { AuthError } from '@supabase/supabase-js';
 
 import { supabase } from '@/lib/supabase';
 import { characterFor } from '@/lib/people';
+import { forgetThisDevice } from '@/lib/push';
 import type { Gender } from '@/lib/types/database';
 
 export type AuthActionState = { error: string | null };
@@ -166,5 +167,8 @@ export async function changePassword(password: string): Promise<AuthActionState>
 }
 
 export async function signOut(): Promise<void> {
+  // while the session is still valid: the delete is made as its owner, and a
+  // phone nobody is signed in on must not keep getting their notifications
+  await forgetThisDevice();
   await supabase.auth.signOut();
 }

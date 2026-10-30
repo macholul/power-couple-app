@@ -12,6 +12,7 @@ import {
 } from '@expo-google-fonts/fredoka';
 
 import { AuthProvider } from '@/lib/auth';
+import { PushProvider } from '@/lib/push';
 import { ViewerProvider } from '@/lib/viewer';
 import { FONT, NEUTRAL } from '@/constants/theme';
 
@@ -55,13 +56,15 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <ViewerProvider>
-        <StatusBar style="dark" />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: NEUTRAL.bg },
-          }}
-        />
+        <PushProvider>
+          <StatusBar style="dark" />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: NEUTRAL.bg },
+            }}
+          />
+        </PushProvider>
       </ViewerProvider>
     </AuthProvider>
   );

@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { flushPush } from '@/lib/push';
 
 export type NoteActionState = { error: string | null };
 
@@ -26,6 +27,7 @@ export async function sendNote(text: string): Promise<NoteActionState> {
     text: trimmed,
   });
   if (error) return { error: error.message.toLowerCase() };
+  flushPush();
   return { error: null };
 }
 

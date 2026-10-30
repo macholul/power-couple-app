@@ -11,6 +11,12 @@ export interface Profile {
   gender: Gender;
   timezone: string | null;
   created_at: string;
+  /** which push notifications this person wants; see lib/push */
+  notify_proofs: boolean;
+  notify_notes: boolean;
+  notify_streak: boolean;
+  /** the hour, on their own clock, the streak reminder may arrive */
+  reminder_hour: number;
 }
 
 export interface Couple {

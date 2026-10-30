@@ -10,6 +10,7 @@ import { MonthGrid } from '@/components/month-grid';
 import { NoteBubble } from '@/components/note-bubble';
 import { PopIn } from '@/components/pop-in';
 import { Press } from '@/components/press';
+import { PushNudge } from '@/components/push-nudge';
 import { Wordmark } from '@/components/wordmark';
 import { useCoupleData } from '@/lib/couple-data';
 import { addDaysToKey, dateKeyIn, weekdayOfKey } from '@/lib/dates';
@@ -174,6 +175,8 @@ function Home({ viewer }: { viewer: Viewer }) {
           />
         ))}
       </View>
+
+      <PushNudge partnerName={nameOf(viewer.partner)} />
 
       {missedConfirmations.length > 0 && (
         <PopIn

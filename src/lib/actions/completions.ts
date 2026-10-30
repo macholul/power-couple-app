@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { removePhotos, shrinkPhoto, uploadCompletionPhoto } from '@/lib/photos';
+import { flushPush } from '@/lib/push';
 
 export type CompletionActionState = { error: string | null };
 
@@ -40,6 +41,7 @@ export async function submitProof(
     return { error: error.message.toLowerCase() };
   }
   if (replacing && replacing !== path) void removePhotos([replacing]);
+  flushPush();
   return { error: null };
 }
 
@@ -52,5 +54,6 @@ export async function confirmProof(
     p_completion_id: completionId,
   });
   if (error) return { error: error.message.toLowerCase() };
+  flushPush();
   return { error: null };
 }

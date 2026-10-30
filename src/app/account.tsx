@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { Alert, Linking, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Linking, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -16,6 +16,8 @@ import {
   signOut,
 } from '@/lib/actions/auth';
 import { genderOf } from '@/lib/people';
+import { setNotificationPrefs, type NotificationPrefs } from '@/lib/actions/profile';
+import { usePush } from '@/lib/push';
 import type { Gender, Profile } from '@/lib/types/database';
 import { useRefreshViewer, useViewer } from '@/lib/viewer';
 import { FONT, NEUTRAL } from '@/constants/theme';
@@ -67,6 +69,14 @@ function Account() {
       </View>
 
       {profile && <YouCard key={profile.id} userId={userId} profile={profile} paired={!!partner} />}
+      {profile && partner && (
+        <NotificationsCard
+          key={`notifications-${profile.id}`}
+          userId={userId}
+          profile={profile}
+          partnerName={partner.display_name ?? 'your partner'}
+        />
+      )}
       {partner && <CoupleCard partnerName={partner.display_name ?? 'your partner'} />}
       <PasswordCard />
       <AboutCard />
@@ -160,6 +170,134 @@ function YouCard({ userId, profile, paired }: { userId: string; profile: Profile
       )}
       <StatusLine status={status} />
     </Card>
+  );
+}
+
+/**
+ * Which notifications the person wants, and the one place iOS's own
+ * permission is asked for. The switches stay visible but inert while
+ * permission is missing, so it is clear what turning it on would give you.
+ */
+function NotificationsCard({
+  userId,
+  profile,
+  partnerName,
+}: {
+  userId: string;
+  profile: Profile;
+  partnerName: string;
+}) {
+  const { state, enable } = usePush();
+  const refreshViewer = useRefreshViewer();
+  const [prefs, setPrefs] = useState<NotificationPrefs>({
+    notify_proofs: profile.notify_proofs,
+    notify_notes: profile.notify_notes,
+    notify_streak: profile.notify_streak,
+  });
+  const [error, setError] = useState<string | null>(null);
+
+  const allowed = state === 'granted';
+
+  const toggle = async (field: keyof NotificationPrefs, value: boolean) => {
+    // Optimistic: a switch that waits for the network feels broken.
+    setPrefs((current) => ({ ...current, [field]: value }));
+    setError(null);
+    const saved = await setNotificationPrefs(userId, { [field]: value });
+    if (!saved) {
+      setPrefs((current) => ({ ...current, [field]: !value }));
+      setError('could not save that, try again');
+      return;
+    }
+    await refreshViewer();
+  };
+
+  const askIos = async () => {
+    setError(null);
+    if ((await enable()) === 'denied') {
+      setError('iphone settings has notifications off for powercouple');
+    }
+  };
+
+  return (
+    <Card title="notifications">
+      {state === 'undetermined' && (
+        <>
+          <Text style={styles.body}>
+            get a nudge when {partnerName} finishes a goal, confirms yours, or sends you a note.
+          </Text>
+          <Press onPress={() => void askIos()} style={styles.wideButton}>
+            <Text style={styles.wideButtonLabel}>turn on notifications</Text>
+          </Press>
+        </>
+      )}
+      {state === 'denied' && (
+        <>
+          <Text style={styles.body}>notifications are turned off for powercouple on this phone.</Text>
+          <Press onPress={() => void Linking.openSettings()} style={styles.wideButton}>
+            <Text style={styles.wideButtonLabel}>open iphone settings</Text>
+          </Press>
+        </>
+      )}
+      {state === 'unsupported' && (
+        <Text style={styles.body}>this device can&apos;t show notifications.</Text>
+      )}
+
+      <View style={allowed ? undefined : styles.dimmed}>
+        <SwitchRow
+          label={`when ${partnerName} sends proof`}
+          value={prefs.notify_proofs}
+          disabled={!allowed}
+          onChange={(next) => void toggle('notify_proofs', next)}
+        />
+        <SwitchRow
+          label={`when ${partnerName} sends a note`}
+          value={prefs.notify_notes}
+          disabled={!allowed}
+          onChange={(next) => void toggle('notify_notes', next)}
+        />
+        <SwitchRow
+          label="a nudge if your goals are still open"
+          value={prefs.notify_streak}
+          disabled={!allowed}
+          onChange={(next) => void toggle('notify_streak', next)}
+          last
+        />
+      </View>
+      <Text style={styles.hint}>
+        the nudge comes around {profile.reminder_hour % 12 || 12}
+        {profile.reminder_hour < 12 ? 'am' : 'pm'} your time, and only on days you have goals left.
+      </Text>
+      {error && <Text style={styles.error}>{error}</Text>}
+    </Card>
+  );
+}
+
+function SwitchRow({
+  label,
+  value,
+  disabled,
+  onChange,
+  last = false,
+}: {
+  label: string;
+  value: boolean;
+  disabled: boolean;
+  onChange: (value: boolean) => void;
+  last?: boolean;
+}) {
+  return (
+    <View style={[styles.row, !last && styles.rowDivider]}>
+      <Text style={[styles.rowLabel, styles.rowLabelGrow]}>{label}</Text>
+      <Switch
+        value={value}
+        onValueChange={onChange}
+        disabled={disabled}
+        trackColor={{ false: NEUTRAL.toggleTrack, true: '#E5628E' }}
+        thumbColor="#FFFFFF"
+        ios_backgroundColor={NEUTRAL.toggleTrack}
+        accessibilityLabel={label}
+      />
+    </View>
   );
 }
 
@@ -363,6 +501,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
   },
   smallButtonLabel: { fontFamily: FONT.semibold, fontSize: 14, color: '#FFFFFF' },
+  wideButton: {
+    backgroundColor: '#E5628E',
+    borderRadius: 999,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  wideButtonLabel: { fontFamily: FONT.semibold, fontSize: 15, color: '#FFFFFF' },
   dimmed: { opacity: 0.5 },
   outlineDanger: {
     borderWidth: 2,
@@ -382,6 +527,7 @@ const styles = StyleSheet.create({
   },
   rowDivider: { borderBottomWidth: 1.5, borderBottomColor: NEUTRAL.toggleTrack },
   rowLabel: { fontFamily: FONT.medium, fontSize: 15, color: NEUTRAL.ink },
+  rowLabelGrow: { flex: 1, paddingRight: 12 },
   rowChevron: {
     width: 8,
     height: 8,
