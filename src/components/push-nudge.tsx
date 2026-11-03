@@ -72,12 +72,17 @@ export function PushNudge({ partnerName }: { partnerName: string }) {
 }
 
 const styles = StyleSheet.create({
+  // the same inset, radius and spacing as the home screen's streak card
   card: {
+    marginTop: 14,
+    marginHorizontal: 12,
     backgroundColor: '#FFFFFF',
     borderWidth: 2,
     borderColor: NEUTRAL.cardBorder,
-    borderRadius: 24,
-    padding: 16,
+    borderRadius: 28,
+    paddingTop: 18,
+    paddingHorizontal: 18,
+    paddingBottom: 16,
     gap: 8,
   },
   title: { fontFamily: FONT.semibold, fontSize: 16, color: NEUTRAL.ink },
