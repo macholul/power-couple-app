@@ -24,8 +24,8 @@
  *                            failed to flush.
  *
  * The platform's JWT check is off for this function (supabase/config.toml),
- * because the project's secret key is not a JWT and the schedule could not
- * get past it. The same check happens here instead: the secret key may do
+ * because the dashboard's cron job sends the secret key in an `apiKey` header
+ * rather than as a JWT in `Authorization`, and could not get past it. The same check happens here instead: the secret key may do
  * anything, a signed-in user's session may drain, and nothing else gets in.
  *
  * Expo's push service needs no credentials by default. Turning on enhanced

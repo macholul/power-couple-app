@@ -55,7 +55,13 @@ when that last one is wanted.
 
 ## Steps only you can do
 
+Where things stand on 3 November 2026: steps 1 to 3 are done, build 2 of
+1.1.0 is uploaded, and what is left is testing it on a phone from TestFlight,
+Device ID in App Privacy, and submitting it for review.
+
 ### 1. An Apple push key
+
+Done on 3 November 2026: key `3U3698QSC5`, assigned to the app.
 
 Expo delivers through Apple, and Apple needs a key for this team. EAS creates
 and keeps it:
@@ -71,17 +77,28 @@ build then carries the push entitlement; builds made before this do not, and
 `getExpoPushTokenAsync()` simply fails on them, which the app treats as "no
 notifications" rather than an error.
 
+If EAS answers that you "don't have access to this membership resource",
+Apple has updated the Program License Agreement: accept it at
+developer.apple.com/account and run the command again. The next build then
+asks whether to reuse the provisioning profile; say yes, and EAS regenerates
+it with the push capability.
+
 ### 2. Deploy the function and the schema
 
-Claude runs these, or you can:
+Done on 30 October 2026, and the function was redeployed on 3 November when
+its credential check moved inside it (step 3). After changing either:
 
 ```bash
-npx supabase db push
+npx supabase db push --remote
 npx supabase functions deploy push --use-api
 npm run db:verify
 ```
 
+Since Supabase CLI 3, `db push` without `--remote` targets a local database.
+
 ### 3. Schedule the sweep
+
+Done on 3 November 2026: job `push-reminders`, whose first run answered 200.
 
 `pg_cron` and `pg_net` are both enabled (since 3 November 2026). In the
 dashboard, **Integrations → Cron → Create job**:
@@ -96,8 +113,9 @@ dashboard, **Integrations → Cron → Create job**:
 
 The function refuses the reminder sweep from anything but the secret key, so
 nobody's phone can trigger other people's reminders. The dashboard warns that
-a secret key needs JWT verification turned off: it is not a JWT, so the
-platform's check would reject it. That is why `[functions.push]` has
+a secret key needs JWT verification turned off: the job sends the key in an
+`apiKey` header, not as a JWT in `Authorization`, which is what the
+platform's check looks for. That is why `[functions.push]` has
 `verify_jwt = false` and the function checks credentials itself: the secret
 key may do anything, a signed-in session may only drain, and anything else
 gets a 401.
@@ -107,7 +125,8 @@ in Supabase's free plan.
 
 ### 4. A new build, and App Store Connect
 
-Notifications need native code, so they arrive with a build:
+Build 2 of version 1.1.0 was uploaded on 3 November 2026. Notifications need
+native code, so they arrive with a build:
 
 ```bash
 npm run preflight
@@ -151,9 +170,11 @@ when it is not, so the order of those two steps does not matter.
 
 ## Trying it out
 
-Notifications only reach a real phone, from a build made after step 1. With
-two phones, or one phone and the simulator, submit a proof on one side and
-watch the other. One phone alone can still see the reminder: in the SQL
+Notifications only reach a real phone, from a build made after step 1. The
+simulator can register for them, but Apple refuses to deliver to its token
+(`BadDeviceToken` in Expo's receipt), so it can only be the side that sends:
+sign in to the phone as one partner and the simulator as the other, submit a
+proof or send a note from the simulator, and watch the phone. One phone alone can still see the reminder: in the SQL
 editor, set your own reminder hour to the hour it is now in your timezone and
 wait for the next quarter hour.
 
