@@ -90,8 +90,9 @@ dashboard, **Integrations → Cron → Create job**:
 - schedule: `*/15 * * * *`
 - type: Supabase Edge Function, `push`, method `POST`
 - body: `{"task":"reminders"}`
-- timeout: 20000 ms
-- HTTP headers: **Add header → Add secret key**
+- timeout: 5000 ms, the most the form allows; a run takes well under a second
+- HTTP headers: the ▾ beside **Add header** → **Add secret key**, which adds
+  an `apiKey` header holding the key
 
 The function refuses the reminder sweep from anything but the secret key, so
 nobody's phone can trigger other people's reminders. The dashboard warns that
