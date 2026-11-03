@@ -203,14 +203,24 @@ through review and accept the risk.
    [review-notes.md](review-notes.md).
 9. Choose the build from step 9 and submit for review.
 
-### 13. Push notifications, after 1.0
+### 13. Push notifications, version 1.1.0
 
-Built on 30 October 2026, and `app.json` is now version 1.1.0, since a
-released version number cannot take another build. Four things are left that
-only you can do: an Apple push key, a scheduled job, a new build, and Device
-ID in App Privacy. They are
-written out in [../push-notifications.md](../push-notifications.md), along with
-how the feature works and how to test it.
+Built on 30 October 2026. By 3 November the Apple push key, the scheduled
+reminder job and build 2 of 1.1.0 were all done, and the build was uploaded.
+Left:
+
+1. Install build 2 from TestFlight, sign in as one demo partner, allow
+   notifications, and send a note from the other partner (the simulator
+   works for that side). The phone should buzz within seconds.
+2. App Privacy: add **Identifiers → Device ID** (App Functionality, linked,
+   no tracking), then **Publish**.
+3. Just before submitting, have Claude extend the demo couple's history to
+   that day, so reviewers see a streak rather than 0. A streak breaks on any
+   past day the couple didn't finish, so this can't be done far in advance.
+4. In version 1.1.0, choose build 2, paste the What's New text, and submit.
+
+Details, and how notifications work, are in
+[../push-notifications.md](../push-notifications.md).
 
 ## Already done
 

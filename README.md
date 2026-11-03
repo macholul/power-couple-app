@@ -2,11 +2,14 @@
 
 An iPhone app for two partners: each sets goals for the days of the week,
 sends photo proof when one is done, and the other confirms it. Days where
-both finished everything build a shared streak.
+both finished everything build a shared streak. Push notifications tell each
+partner when the other finishes a goal, confirms one, or sends a note, and
+nudge them in the evening when their own goals are still open.
 
 Built with Expo (SDK 57, expo-router, React Native 0.86) on a Supabase backend
-(Postgres, Auth, Storage, one Edge Function). It began as a Next.js web app;
-this is the native port, sharing the same database.
+(Postgres, Auth, Storage, three Edge Functions and a scheduled job), with
+notifications delivered through Expo's push service. It began as a Next.js
+web app; this is the native port, sharing the same database.
 
 ## Run it
 
@@ -26,7 +29,14 @@ npm run ios
 
 This builds the native app (the `ios/` folder is generated from `app.json`
 and never committed) and opens it in the simulator. If CocoaPods fails with
-an encoding error, run `export LANG=en_US.UTF-8` first.
+an encoding error, run `export LANG=en_US.UTF-8` first. After changing
+`app.json`'s plugins, rebuild from scratch with
+`npx expo prebuild --platform ios --clean` first; this also wipes the app's
+data in the simulator, so you sign in again.
+
+The simulator can ask for notification permission and register, but Apple
+won't deliver to it. To see a notification arrive, use a phone with a
+TestFlight build (`docs/push-notifications.md`).
 
 ## Scripts
 
@@ -56,8 +66,9 @@ src/app/          screens; the folder structure is the routing
 src/components/   UI pieces
 src/lib/          data, actions, auth, streak math
 src/content/      the policy text, shared with docs/legal
-supabase/         migrations, tests, the delete-account function, email templates
+supabase/         migrations, tests, Edge Functions, email templates
 docs/app-store/   release checklist, privacy labels, review notes
+docs/push-notifications.md   how notifications work, and how to test them
 ```
 
 How screens decide where someone belongs (signed out, unpaired, paired) lives
