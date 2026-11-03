@@ -8,7 +8,10 @@ import { execFileSync } from 'node:child_process';
 import { CATALOG_QUERIES, type Catalog, type CatalogName } from './catalog.ts';
 
 function queryLinked(sql: string): Record<string, unknown>[] {
-  const stdout = execFileSync('npx', ['--no-install', 'supabase', 'db', 'query', '--linked', sql], {
+  // --read-only: since CLI 3, a query against production that isn't marked
+  // read-only stops to ask for confirmation, which a script cannot give
+  const args = ['--no-install', 'supabase', 'db', 'query', '--remote', '--read-only', sql];
+  const stdout = execFileSync('npx', args, {
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe'],
     maxBuffer: 64 * 1024 * 1024,

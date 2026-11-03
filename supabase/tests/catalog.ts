@@ -42,11 +42,19 @@ export const CATALOG_QUERIES = {
     join pg_namespace n on n.oid = p.pronamespace
     where n.nspname = 'public'
     order by 1, 2`,
+  // Read from the ACLs themselves rather than information_schema, whose grant
+  // views only list grants involving the role asking: the CLI's read-only
+  // role is none of these, so through it production appeared to have none.
+  // A function with no ACL has its defaults, which acldefault() spells out
+  // the same way the information_schema views did.
   function_grants: `
-    select routine_name, grantee, privilege_type
-    from information_schema.role_routine_grants
-    where routine_schema = 'public'
-      and grantee in ('PUBLIC', 'anon', 'authenticated', 'service_role')
+    select p.proname::text as routine_name,
+           case when a.grantee = 0 then 'PUBLIC' else a.grantee::regrole::text end as grantee,
+           a.privilege_type
+    from pg_proc p
+    cross join lateral aclexplode(coalesce(p.proacl, acldefault('f', p.proowner))) a
+    where p.pronamespace = 'public'::regnamespace
+      and (a.grantee = 0 or a.grantee::regrole::text in ('anon', 'authenticated', 'service_role'))
     order by 1, 2`,
   policies: `
     select schemaname, tablename, policyname, permissive, roles::text as roles, cmd, qual, with_check
