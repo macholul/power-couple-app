@@ -443,6 +443,8 @@ verify_jwt = true
 
 # Sends what the database has queued (supabase/functions/push). The app calls
 # it with its session to flush right away; the schedule calls it with the
-# secret key, which is the only credential the reminder sweep accepts.
+# secret key, which is the only credential the reminder sweep accepts. The
+# secret key is not a JWT, so the platform's check would turn the schedule
+# away: the function checks both credentials itself instead.
 [functions.push]
-verify_jwt = true
+verify_jwt = false

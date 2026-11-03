@@ -23,6 +23,11 @@
  *                            is also the safety net for anything the app
  *                            failed to flush.
  *
+ * The platform's JWT check is off for this function (supabase/config.toml),
+ * because the project's secret key is not a JWT and the schedule could not
+ * get past it. The same check happens here instead: the secret key may do
+ * anything, a signed-in user's session may drain, and nothing else gets in.
+ *
  * Expo's push service needs no credentials by default. Turning on enhanced
  * security in the EAS dashboard makes it require an access token; set
  * EXPO_ACCESS_TOKEN as a function secret and it is sent.
@@ -30,6 +35,21 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 import { secretKey } from '../_shared/secret-key.ts';
+
+/**
+ * Whether a credential is one of this project's secret keys: any of the new
+ * kind, or the legacy service role key. The schedule sends whichever the
+ * dashboard picked, which need not be the one secretKey() prefers.
+ */
+function isSecretKey(candidate: string): boolean {
+  if (!candidate) return false;
+  const keys: string[] = [];
+  const named = Deno.env.get('SUPABASE_SECRET_KEYS');
+  if (named) keys.push(...Object.values(JSON.parse(named) as Record<string, string>));
+  const legacy = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  if (legacy) keys.push(legacy);
+  return keys.some((key) => key === candidate);
+}
 
 const EXPO_SEND_URL = 'https://exp.host/--/api/v2/push/send';
 
@@ -226,17 +246,25 @@ Deno.serve(async (request) => {
     return reply(400, { error: 'task must be "drain" or "reminders"' });
   }
 
-  const key = secretKey();
-  // The platform has already verified the token; this only asks whether the
-  // caller is the schedule rather than somebody's phone.
-  const bearer = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '') ?? '';
-  if (task === 'reminders' && bearer !== key) {
-    return reply(403, { error: 'only the schedule may run the reminder sweep' });
-  }
-
-  const db = createClient(Deno.env.get('SUPABASE_URL')!, key, {
+  const db = createClient(Deno.env.get('SUPABASE_URL')!, secretKey(), {
     auth: { autoRefreshToken: false, persistSession: false },
   });
+
+  // The schedule sends its key as a bearer token or as `apikey`, depending on
+  // how the job was set up; the app always sends the user's session.
+  const bearer = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '') ?? '';
+  const fromSchedule = isSecretKey(bearer) || isSecretKey(request.headers.get('apikey') ?? '');
+  if (!fromSchedule) {
+    if (task === 'reminders') {
+      return reply(403, { error: 'only the schedule may run the reminder sweep' });
+    }
+    // Asks the Auth server, not just the token's signature, the same way
+    // delete-account does: a signed-out session must not get this far.
+    const { data: auth, error: authError } = bearer
+      ? await db.auth.getUser(bearer)
+      : { data: { user: null }, error: null };
+    if (authError || !auth.user) return reply(401, { error: 'not signed in' });
+  }
 
   let queued = 0;
   if (task === 'reminders') {

@@ -83,39 +83,23 @@ npm run db:verify
 
 ### 3. Schedule the sweep
 
-In the dashboard, **Integrations → Cron → Create job**:
+`pg_cron` and `pg_net` are both enabled (since 3 November 2026). In the
+dashboard, **Integrations → Cron → Create job**:
 
 - name: `push-reminders`
 - schedule: `*/15 * * * *`
 - type: Supabase Edge Function, `push`, method `POST`
 - body: `{"task":"reminders"}`
 - timeout: 20000 ms
+- HTTP headers: **Add header → Add secret key**
 
-The job must authenticate as the service role: the function refuses the
-reminder sweep from anything but the secret key, so nobody's phone can trigger
-other people's reminders. The dashboard fills the header in for you. The same
-thing in SQL, with `pg_cron` and `pg_net` enabled under **Database →
-Extensions**, is below — run it in the SQL editor and never commit it, because
-it contains the key:
-
-```sql
--- paste your own project's secret key; this is not for the repository
-select vault.create_secret('<secret key>', 'push_function_key');
-
-select cron.schedule('push-reminders', '*/15 * * * *', $$
-  select net.http_post(
-    url := 'https://imhpwatxupusiiujwvdr.supabase.co/functions/v1/push',
-    headers := jsonb_build_object(
-      'content-type', 'application/json',
-      'authorization', 'Bearer ' || (
-        select decrypted_secret from vault.decrypted_secrets where name = 'push_function_key'
-      )
-    ),
-    body := '{"task":"reminders"}'::jsonb,
-    timeout_milliseconds := 20000
-  );
-$$);
-```
+The function refuses the reminder sweep from anything but the secret key, so
+nobody's phone can trigger other people's reminders. The dashboard warns that
+a secret key needs JWT verification turned off: it is not a JWT, so the
+platform's check would reject it. That is why `[functions.push]` has
+`verify_jwt = false` and the function checks credentials itself: the secret
+key may do anything, a signed-in session may only drain, and anything else
+gets a 401.
 
 96 runs a day is about 2,900 function calls a month, against 500,000 included
 in Supabase's free plan.
